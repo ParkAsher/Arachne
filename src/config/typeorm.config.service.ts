@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
-import { Users } from 'src/user/users.entity';
-import { Articles } from 'src/article/articles.entity';
+import { Users } from 'src/entities/users.entity';
+import { Articles } from 'src/entities/articles.entity';
 
 @Injectable()
 export class TypeOrmConfigService implements TypeOrmOptionsFactory {
