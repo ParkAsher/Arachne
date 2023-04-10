@@ -31,6 +31,10 @@ export class Users {
     @Column('varchar', { nullable: false })
     nickname: string;
 
+    @Index({ unique: true })
+    @Column('varchar', { nullable: false })
+    phone: string;
+
     @Column('varchar', {
         nullable: true,
         default:
