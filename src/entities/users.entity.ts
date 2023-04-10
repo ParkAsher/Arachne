@@ -4,9 +4,14 @@ import {
     DeleteDateColumn,
     Entity,
     Index,
+    JoinTable,
+    ManyToMany,
+    OneToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
+import { Comments } from './comments.entity';
+import { Articles } from './articles.entity';
 
 @Entity({ schema: 'arachne', name: 'Users' })
 export class Users {
@@ -42,6 +47,9 @@ export class Users {
     })
     profileImg: string;
 
+    @Column({ type: 'int', unsigned: true, nullable: false, default: 2 })
+    role: number;
+
     @CreateDateColumn({ nullable: true })
     readonly createdAt: Date;
 
@@ -50,4 +58,34 @@ export class Users {
 
     @DeleteDateColumn({ nullable: true, default: null })
     readonly deletedAt: Date | null;
+
+    /*
+        user - comment : One To Many
+    */
+    @OneToMany(() => Comments, (comments) => comments.Users)
+    Comments: Comments[];
+
+    /*
+        user - article : One To Many
+    */
+    @OneToMany(() => Articles, (articles) => articles.Users)
+    Articles: Articles[];
+
+    /*
+        user - article : Many To Many
+        (Likes)
+    */
+    @ManyToMany(() => Articles, (articles) => articles.LikesUsers)
+    @JoinTable({
+        name: 'Likes',
+        joinColumn: {
+            name: 'user_id',
+            referencedColumnName: 'userId',
+        },
+        inverseJoinColumn: {
+            name: 'article_id',
+            referencedColumnName: 'articleId',
+        },
+    })
+    LikesArticles: Articles[];
 }
