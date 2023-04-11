@@ -104,3 +104,13 @@
     background-color: #7f7f66;
     border-radius: 5px;
 }
+
+.signup-btn button:hover {
+    cursor: pointer;
+}
+
+.signup-error-message {
+    font-size: 0.75rem;
+    padding: 0.375rem 0;
+    color: red;
+}
