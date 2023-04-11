@@ -1,4 +1,7 @@
 function signup() {
+    // 에러메시지 초기화
+    signupErrorRemove();
+
     const id = document.getElementById('user-id').value; // 아이디
     const password = document.getElementById('user-password').value; // 비밀번호
     const passwordCheck = document.getElementById('user-password-check').value; // 비밀번호확인
@@ -47,23 +50,71 @@ function signup() {
             console.log(res);
         })
         .catch((err) => {
-            for (let errPosition of err.response.data.message) {
-                signupErrorHandler(errPosition);
+            console.log(err);
+
+            if (err.response.data.statusText === 'Validation Error') {
+                for (let errPosition of err.response.data.message) {
+                    signupValidationErrorHandler(errPosition);
+                }
+            }
+
+            if (err.response.statusText === 'Conflict') {
+                signupExistErrorHandler(err.response.data.message);
             }
         });
 }
 
-function signupErrorHandler(errorPosition) {
-    console.log(errorPosition);
-    const errorPositionDOM = document.getElementById(
+function signupValidationErrorHandler(errorPosition) {
+    const errorPositionElement = document.getElementById(
         `signup-${errorPosition}-wrap`,
     );
-    const errorPositionInputDOM = document.getElementById(
+    const errorPositionInputElement = document.getElementById(
         `user-${errorPosition}`,
     );
 
     let errorMessage = `<div class="signup-error-message">형식이 일치하지 않습니다.</div>`;
 
-    errorPositionDOM.insertAdjacentHTML('beforeend', errorMessage);
-    errorPositionInputDOM.value = null;
+    errorPositionElement.insertAdjacentHTML('beforeend', errorMessage);
+    errorPositionInputElement.value = null;
+}
+
+function signupErrorRemove() {
+    let targetElements = document.getElementsByClassName(
+        'signup-error-message',
+    );
+
+    while (targetElements.length > 0) {
+        targetElements[0].parentNode.removeChild(targetElements[0]);
+    }
+}
+
+function signupExistErrorHandler(errorPosition) {
+    let errorText = '';
+    switch (errorPosition) {
+        case 'id':
+            errorText = '아이디';
+            break;
+        case 'email':
+            errorText = '이메일';
+            break;
+        case 'phone':
+            errorText = '휴대폰번호';
+            break;
+        case 'nickname':
+            errorText = '닉네임';
+        default:
+            break;
+    }
+
+    const errorPositionElement = document.getElementById(
+        `signup-${errorPosition}-wrap`,
+    );
+    const errorPositionInputElement = document.getElementById(
+        `user-${errorPosition}`,
+    );
+
+    let errorMessage = `<div class="signup-error-message">이미 사용중인 ${errorText}입니다.</div>`;
+
+    errorPositionElement.insertAdjacentHTML('beforeend', errorMessage);
+    errorPositionInputElement.value = null;
 }
