@@ -10,4 +10,10 @@ export class AppController {
     index() {
         return { component: 'main' };
     }
+
+    @Get('signup')
+    @Render('index')
+    signup() {
+        return { component: 'signup' };
+    }
 }
