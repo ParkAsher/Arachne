@@ -47,7 +47,8 @@ function signup() {
     axios
         .post(`/api/user/signup`, userInfo)
         .then((res) => {
-            console.log(res);
+            alert('회원가입 신청을 하였습니다.');
+            window.location.href = '/';
         })
         .catch((err) => {
             console.log(err);
