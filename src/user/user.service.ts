@@ -11,44 +11,11 @@ export class UserService {
         @InjectRepository(Users) private userRepository: Repository<Users>,
     ) {}
 
-    async findUserById(id: string) {
+    async findExistUser(column) {
         try {
             return await this.userRepository.find({
                 select: ['id'],
-                where: { id },
-            });
-        } catch (error) {
-            throw error;
-        }
-    }
-
-    async findUserByEmail(email: string) {
-        try {
-            return await this.userRepository.find({
-                select: ['id'],
-                where: { email },
-            });
-        } catch (error) {
-            throw error;
-        }
-    }
-
-    async findUserByNickname(nickname: string) {
-        try {
-            return await this.userRepository.find({
-                select: ['id'],
-                where: { nickname },
-            });
-        } catch (error) {
-            throw error;
-        }
-    }
-
-    async findUserByPhone(phone: string) {
-        try {
-            return await this.userRepository.find({
-                select: ['id'],
-                where: { phone },
+                where: { ...column },
             });
         } catch (error) {
             throw error;
@@ -57,26 +24,22 @@ export class UserService {
 
     async signUpUser(userInfo: signupUserDto) {
         try {
-            const existId = await this.findUserById(userInfo.id);
-            if (existId.length) {
-                throw new HttpException('id', HttpStatus.CONFLICT);
-            }
+            const duplicatedCheckArray = [
+                { id: userInfo.id },
+                { email: userInfo.email },
+                { phone: userInfo.phone },
+                { nickname: userInfo.nickname },
+            ];
 
-            const existEmail = await this.findUserByEmail(userInfo.email);
-            if (existEmail.length) {
-                throw new HttpException('email', HttpStatus.CONFLICT);
-            }
+            for (let column of duplicatedCheckArray) {
+                const duplicatedUser = await this.findExistUser(column);
 
-            const existPhone = await this.findUserByPhone(userInfo.phone);
-            if (existPhone.length) {
-                throw new HttpException('phone', HttpStatus.CONFLICT);
-            }
-
-            const existNickname = await this.findUserByNickname(
-                userInfo.nickname,
-            );
-            if (existNickname.length) {
-                throw new HttpException('nickname', HttpStatus.CONFLICT);
+                if (duplicatedUser.length) {
+                    throw new HttpException(
+                        Object.keys(column)[0],
+                        HttpStatus.CONFLICT,
+                    );
+                }
             }
 
             // 비밀번호 암호화
