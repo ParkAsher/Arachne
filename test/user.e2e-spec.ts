@@ -8,10 +8,11 @@ import { Users } from 'src/entities/users.entity';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
 import { UserDummy } from './dummy/user.dummy';
+import { UpdateUserDto } from 'src/user/dto/update-user.dto';
 
 describe('AppController (e2e)', () => {
     let app: INestApplication;
-    let userService: UserService;
+    // let userService: UserService;
     let server: request.SuperTest<request.Test>;
     let userRepository: Repository<Users>;
 
@@ -31,7 +32,7 @@ describe('AppController (e2e)', () => {
         }).compile();
 
         app = moduleFixture.createNestApplication();
-        userService = moduleFixture.get<UserService>(UserService);
+        // userService = moduleFixture.get<UserService>(UserService);
         server = request(app.getHttpServer());
         userRepository = moduleFixture.get(getRepositoryToken(Users));
 
@@ -62,6 +63,25 @@ describe('AppController (e2e)', () => {
                 phone: UserDummy[0].phone,
                 profileImg: UserDummy[0].profileImg,
                 role: UserDummy[0].role,
+            });
+        });
+    });
+
+    describe('/api/user/1 PATCH', () => {
+        it('유저 정보 수정하기 - 닉네임 ', async () => {
+            // Given
+            const url = `/api/user/${UserDummy[0].userId}`;
+            const updateUserDto: UpdateUserDto = {
+                nickname: 'updateAdminNickname',
+            };
+
+            // When
+            const res = await server.patch(url).send(updateUserDto);
+
+            // Then
+            expect(res.status).toBe(200);
+            expect(res.body).toEqual({
+                message: '수정 되었습니다.',
             });
         });
     });
