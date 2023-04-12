@@ -16,4 +16,10 @@ export class AppController {
     signup() {
         return { component: 'signup' };
     }
+
+    @Get('signin')
+    @Render('index')
+    signin() {
+        return { component: 'signin' };
+    }
 }
