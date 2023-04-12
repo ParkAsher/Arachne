@@ -47,7 +47,7 @@ export class Users {
     })
     profileImg: string;
 
-    @Column({ type: 'int', unsigned: true, nullable: false, default: 2 })
+    @Column({ type: 'int', unsigned: true, nullable: false, default: 3 })
     role: number;
 
     @CreateDateColumn({ nullable: true })
