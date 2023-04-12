@@ -45,14 +45,12 @@ function signup() {
     };
 
     axios
-        .post(`/api/user/signup`, userInfo)
+        .post(`/api/users/signup`, userInfo)
         .then((res) => {
             alert('회원가입 신청을 하였습니다.');
             window.location.href = '/';
         })
         .catch((err) => {
-            console.log(err);
-
             if (err.response.data.statusText === 'Validation Error') {
                 for (let errPosition of err.response.data.message) {
                     signupValidationErrorHandler(errPosition);
