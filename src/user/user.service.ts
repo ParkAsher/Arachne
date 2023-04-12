@@ -51,4 +51,21 @@ export class UserService {
             throw error;
         }
     }
+
+    async getUser(userId: number) {
+        const userInfo = await this.userRepository.findOne({
+            select: [
+                'id',
+                'name',
+                'email',
+                'nickname',
+                'phone',
+                'role',
+                'profileImg',
+            ],
+            where: { userId },
+        });
+
+        return userInfo;
+    }
 }
