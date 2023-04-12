@@ -4,6 +4,7 @@ import { Users } from 'src/entities/users.entity';
 import { Repository } from 'typeorm';
 import { signupUserDto } from './dto/signup-user.dto';
 import * as bcrypt from 'bcrypt';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -52,7 +53,7 @@ export class UserService {
         }
     }
 
-    async getUser(userId: number) {
+    async getUser(userId: number): Promise<Users> {
         const userInfo = await this.userRepository.findOne({
             select: [
                 'id',
@@ -67,5 +68,12 @@ export class UserService {
         });
 
         return userInfo;
+    }
+
+    async updateUser(
+        userId: number,
+        updateUserDto: UpdateUserDto,
+    ): Promise<void> {
+        await this.userRepository.update(userId, { ...updateUserDto });
     }
 }
