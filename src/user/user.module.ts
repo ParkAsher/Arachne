@@ -6,6 +6,7 @@ import { UserService } from './user.service';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtConfigService } from 'src/config/jwt.config.service';
+import { RedisModule } from '@liaoliaots/nestjs-redis';
 
 @Module({
     imports: [
@@ -15,6 +16,7 @@ import { JwtConfigService } from 'src/config/jwt.config.service';
             useClass: JwtConfigService,
             inject: [ConfigService],
         }),
+        RedisModule,
     ],
     controllers: [UserController],
     providers: [UserService],
