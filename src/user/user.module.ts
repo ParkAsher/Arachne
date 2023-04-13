@@ -7,10 +7,14 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtConfigService } from 'src/config/jwt.config.service';
 import { RedisModule } from '@liaoliaots/nestjs-redis';
+import { Articles } from 'src/entities/articles.entity';
+import { Categories } from 'src/entities/categories.entity';
+import { Comments } from 'src/entities/comments.entity';
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([Users]),
+        TypeOrmModule.forFeature([Users, Comments, Articles, Categories]),
+        ,
         JwtModule.registerAsync({
             imports: [ConfigModule],
             useClass: JwtConfigService,

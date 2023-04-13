@@ -14,6 +14,7 @@ import { signinUserDto } from './dto/signin-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRedis } from '@liaoliaots/nestjs-redis';
 import { Redis } from 'ioredis';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -133,5 +134,29 @@ export class UserService {
             'EX',
             86400,
         );
+    }
+
+    async getUser(userId: number): Promise<Users> {
+        const userInfo = await this.userRepository.findOne({
+            select: [
+                'id',
+                'name',
+                'email',
+                'nickname',
+                'phone',
+                'role',
+                'profileImg',
+            ],
+            where: { userId },
+        });
+
+        return userInfo;
+    }
+
+    async updateUser(
+        userId: number,
+        updateUserDto: UpdateUserDto,
+    ): Promise<void> {
+        await this.userRepository.update(userId, { ...updateUserDto });
     }
 }
