@@ -80,7 +80,9 @@ export class UserService {
             const user = await this.findUser(userInfo.id);
 
             if (!user) {
-                throw new NotFoundException('존재하지 않는 아이디입니다.');
+                throw new UnauthorizedException(
+                    '아이디 혹은 비밀번호가 일치하지 않습니다.',
+                );
             }
 
             // 입력받은 비밀번호, DB에 저장된 비밀번호 비교
