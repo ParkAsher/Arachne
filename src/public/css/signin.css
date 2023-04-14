@@ -111,3 +111,10 @@
     color: #bf9b30;
     font-weight: bold;
 }
+
+.signin-error-message {
+    text-align: center;
+    font-size: 0.75rem;
+    padding: 0.375rem 0;
+    color: red;
+}

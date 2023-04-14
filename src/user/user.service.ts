@@ -1,16 +1,38 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+    HttpException,
+    HttpStatus,
+    Injectable,
+    NotFoundException,
+    UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from 'src/entities/users.entity';
 import { Repository } from 'typeorm';
 import { signupUserDto } from './dto/signup-user.dto';
 import * as bcrypt from 'bcrypt';
+import { signinUserDto } from './dto/signin-user.dto';
+import { JwtService } from '@nestjs/jwt';
+import { InjectRedis } from '@liaoliaots/nestjs-redis';
+import { Redis } from 'ioredis';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
     constructor(
         @InjectRepository(Users) private userRepository: Repository<Users>,
+        @InjectRedis() private readonly redis: Redis,
+        private jwtService: JwtService,
     ) {}
+
+    async findUser(id: string) {
+        try {
+            return await this.userRepository.findOne({
+                where: { id },
+            });
+        } catch (error) {
+            throw error;
+        }
+    }
 
     async findExistUser(column) {
         try {
@@ -51,6 +73,69 @@ export class UserService {
         } catch (error) {
             throw error;
         }
+    }
+
+    async signInUser(userInfo: signinUserDto) {
+        try {
+            const user = await this.findUser(userInfo.id);
+
+            if (!user) {
+                throw new UnauthorizedException(
+                    '아이디 혹은 비밀번호가 일치하지 않습니다.',
+                );
+            }
+
+            // 입력받은 비밀번호, DB에 저장된 비밀번호 비교
+            const compare = await bcrypt.compare(
+                userInfo.password,
+                user.password,
+            );
+
+            if (!compare) {
+                throw new UnauthorizedException(
+                    '아이디 혹은 비밀번호가 일치하지 않습니다.',
+                );
+            }
+
+            // access token 생성
+            const accessToken = await this.createAccessToken(user.userId);
+
+            // refresh token 생성
+            const refreshToken = await this.createRefreshToken();
+
+            // refresh token Redis 저장
+            await this.setRefreshToken(user.userId, refreshToken);
+
+            return { accessToken, refreshToken };
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async createAccessToken(userId: number) {
+        const payload = { userId };
+
+        return await this.jwtService.signAsync(payload, {
+            expiresIn: '1m',
+        });
+    }
+
+    async createRefreshToken() {
+        return await this.jwtService.signAsync(
+            {},
+            {
+                expiresIn: '1d',
+            },
+        );
+    }
+
+    async setRefreshToken(userId: number, refreshToken: string) {
+        await this.redis.set(
+            `refreshToken-${userId}`,
+            refreshToken,
+            'EX',
+            86400,
+        );
     }
 
     async getUser(userId: number): Promise<Users> {
