@@ -14,7 +14,6 @@ import { Comments } from 'src/entities/comments.entity';
 @Module({
     imports: [
         TypeOrmModule.forFeature([Users, Comments, Articles, Categories]),
-        ,
         JwtModule.registerAsync({
             imports: [ConfigModule],
             useClass: JwtConfigService,
