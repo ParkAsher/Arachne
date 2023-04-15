@@ -9,6 +9,7 @@ import { ArticleModule } from './article/article.module';
 import { RedisModule } from '@liaoliaots/nestjs-redis';
 import { RedisConfigService } from './config/redis.config.service';
 import { CacheModule } from './cache/cache.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
     imports: [
@@ -26,6 +27,7 @@ import { CacheModule } from './cache/cache.module';
         UserModule,
         ArticleModule,
         CacheModule,
+        AuthModule,
     ],
     controllers: [AppController],
     providers: [AppService],
