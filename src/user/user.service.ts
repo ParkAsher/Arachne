@@ -12,16 +12,15 @@ import { signupUserDto } from './dto/signup-user.dto';
 import * as bcrypt from 'bcrypt';
 import { signinUserDto } from './dto/signin-user.dto';
 import { JwtService } from '@nestjs/jwt';
-import { InjectRedis } from '@liaoliaots/nestjs-redis';
-import { Redis } from 'ioredis';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { CacheService } from 'src/cache/cache.service';
 
 @Injectable()
 export class UserService {
     constructor(
         @InjectRepository(Users) private userRepository: Repository<Users>,
-        @InjectRedis() private readonly redis: Redis,
         private jwtService: JwtService,
+        private cacheService: CacheService,
     ) {}
 
     async findUser(id: string) {
@@ -104,7 +103,7 @@ export class UserService {
             const refreshToken = await this.createRefreshToken();
 
             // refresh token Redis 저장
-            await this.setRefreshToken(user.userId, refreshToken);
+            await this.cacheService.setRefreshToken(user.userId, refreshToken);
 
             return { accessToken, refreshToken };
         } catch (error) {
@@ -126,15 +125,6 @@ export class UserService {
             {
                 expiresIn: '1d',
             },
-        );
-    }
-
-    async setRefreshToken(userId: number, refreshToken: string) {
-        await this.redis.set(
-            `refreshToken-${userId}`,
-            refreshToken,
-            'EX',
-            86400,
         );
     }
 
