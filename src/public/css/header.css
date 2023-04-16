@@ -42,6 +42,65 @@
     margin-left: 0.5rem;
 }
 
+.header-btn-user-wrap {
+    color: #ffffff;
+
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.header-btn-user-nickname {
+    font-weight: bold;
+}
+
+.header-btn-user-menu {
+    position: relative;
+}
+
+.header-btn-user {
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: #ffffff;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.header-btn-user img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.header-btn-user-modal {
+    position: absolute;
+    right: 0;
+    width: 15rem;
+    background-color: #202020;
+    box-sizing: border-box;
+    border-radius: 0.5rem;
+    border: 1px solid #7f7f66;
+    padding: 0.75rem;
+    margin-top: 0.5rem;
+
+    display: none;
+}
+
+.header-btn-user-modal-menu {
+    width: 100%;
+}
+
+.header-btn-user-modal-menu a {
+    color: #ffffff !important;
+    display: block;
+    padding: 1rem 0.5rem;
+    border-bottom: 1px solid #7f7f66;
+}
+
+.header-btn-user-modal-menu a:last-child {
+    border: none;
+}
+
 @media (max-width: 768px) {
     .header-container {
         width: 100%;
