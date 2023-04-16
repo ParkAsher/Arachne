@@ -6,6 +6,10 @@ import { Redis } from 'ioredis';
 export class CacheService {
     constructor(@InjectRedis() private readonly redis: Redis) {}
 
+    async getRefreshToken(userId: number) {
+        return await this.redis.get(`refreshToken-${userId}`);
+    }
+
     async setRefreshToken(userId: number, refreshToken: string) {
         await this.redis.set(
             `refreshToken-${userId}`,
@@ -13,5 +17,9 @@ export class CacheService {
             'EX',
             86400,
         );
+    }
+
+    async removeRefreshToken(userId: number) {
+        await this.redis.del(`refreshToken-${userId}`);
     }
 }
