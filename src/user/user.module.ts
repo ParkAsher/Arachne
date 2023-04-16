@@ -10,6 +10,7 @@ import { Articles } from 'src/entities/articles.entity';
 import { Categories } from 'src/entities/categories.entity';
 import { Comments } from 'src/entities/comments.entity';
 import { CacheService } from 'src/cache/cache.service';
+import { AuthService } from 'src/auth/auth.service';
 
 @Module({
     imports: [
@@ -21,6 +22,6 @@ import { CacheService } from 'src/cache/cache.service';
         }),
     ],
     controllers: [UserController],
-    providers: [UserService, CacheService],
+    providers: [UserService, CacheService, AuthService],
 })
 export class UserModule {}
