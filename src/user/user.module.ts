@@ -6,10 +6,11 @@ import { UserService } from './user.service';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtConfigService } from 'src/config/jwt.config.service';
-import { RedisModule } from '@liaoliaots/nestjs-redis';
 import { Articles } from 'src/entities/articles.entity';
 import { Categories } from 'src/entities/categories.entity';
 import { Comments } from 'src/entities/comments.entity';
+import { CacheService } from 'src/cache/cache.service';
+import { AuthService } from 'src/auth/auth.service';
 
 @Module({
     imports: [
@@ -19,9 +20,8 @@ import { Comments } from 'src/entities/comments.entity';
             useClass: JwtConfigService,
             inject: [ConfigService],
         }),
-        RedisModule,
     ],
     controllers: [UserController],
-    providers: [UserService],
+    providers: [UserService, CacheService, AuthService],
 })
 export class UserModule {}

@@ -1,13 +1,33 @@
-import { Body, Controller, Get, Param, Patch, Post, Res } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Get,
+    Param,
+    Patch,
+    Post,
+    Req,
+    Res,
+    UseGuards,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { signupUserDto } from './dto/signup-user.dto';
 import { signinUserDto } from './dto/signin-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Users } from 'src/entities/users.entity';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
 
 @Controller('/api/users')
 export class UserController {
     constructor(private readonly userService: UserService) {}
+
+    // 로그인 유무
+    @UseGuards(AuthGuard)
+    @Get('/isLoggedIn')
+    async isLoggedIn(@Req() req) {
+        const { isLoggedIn, userInfo } = req.auth;
+
+        return { isLoggedIn, userInfo };
+    }
 
     @Get('/:userId')
     async getUser(@Param('userId') userId: number): Promise<Users> {
