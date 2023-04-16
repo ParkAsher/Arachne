@@ -40,11 +40,7 @@ export class Users {
     @Column('varchar', { nullable: false })
     phone: string;
 
-    @Column('varchar', {
-        nullable: true,
-        default:
-            'https://previews.123rf.com/images/virtosmedia/virtosmedia2303/virtosmedia230322242/200025658-%EC%9D%B4%EC%8A%AC%EC%9D%B4-%EB%A7%BA%ED%9E%8C-%EA%B1%B0%EB%AF%B8%EC%A4%84-3d-%EA%B7%B8%EB%A6%BC%EC%9E%85%EB%8B%88%EB%8B%A4.jpg',
-    })
+    @Column('varchar', { nullable: true })
     profileImg: string;
 
     @Column({ type: 'int', unsigned: true, nullable: false, default: 3 })
