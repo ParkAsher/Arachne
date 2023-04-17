@@ -82,6 +82,7 @@ export class AuthGuard implements CanActivate {
 
         // 회원 정보 가져오기
         const userInfo = await this.authService.findUserByUserId(userId);
+        userInfo.userId = userId;
 
         request.auth = { isLoggedIn: true, userInfo };
 

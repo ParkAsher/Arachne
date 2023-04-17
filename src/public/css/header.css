@@ -44,17 +44,6 @@
 
 .header-btn-user-wrap {
     color: #ffffff;
-
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.header-btn-user-nickname {
-    font-weight: bold;
-}
-
-.header-btn-user-menu {
     position: relative;
 }
 
@@ -76,29 +65,51 @@
     position: absolute;
     right: 0;
     width: 15rem;
-    background-color: #202020;
+    background-color: #2f2f2f;
     box-sizing: border-box;
     border-radius: 0.5rem;
     border: 1px solid #7f7f66;
-    padding: 0.75rem;
     margin-top: 0.5rem;
+    color: #ffffff;
 
     display: none;
 }
 
-.header-btn-user-modal-menu {
+.header-btn-user-modal div {
     width: 100%;
+    padding: 1rem;
+    border-bottom: 1px solid #7f7f66;
+    box-sizing: border-box;
+    font-size: 0.875rem !important;
+}
+
+.header-btn-user-modal div:last-child {
+    border: none;
 }
 
 .header-btn-user-modal-menu a {
     color: #ffffff !important;
-    display: block;
-    padding: 1rem 0.5rem;
-    border-bottom: 1px solid #7f7f66;
+    font-size: 0.875rem !important;
+    font-weight: bold;
 }
 
-.header-btn-user-modal-menu a:last-child {
+.header-btn-user-modal-menu a:hover {
+    color: bisque !important;
+}
+
+.header-btn-user-modal-signout button {
+    background: none;
+    outline: none;
     border: none;
+    padding: 0;
+    color: #ffffff !important;
+    font-size: 0.875rem !important;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.header-btn-user-modal-signout button:hover {
+    color: bisque !important;
 }
 
 @media (max-width: 768px) {
