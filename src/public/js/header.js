@@ -23,19 +23,19 @@ axios
 
             const headerRightHtml = `
                 <div class="header-btn-user-wrap">
-                    <div class='header-btn-user-nickname'>${userInfo.nickname}</div>
-                    <div class='header-btn-user-menu'>
-                        <button class='header-btn-user' type='button' onclick='showUserModal()'>
-                            <img src='${profileImg}' />
-                        </button>
-                        <div class='header-btn-user-modal'>
-                            <div class='header-btn-user-modal-menu'>
-                                <a href='/mypage'>마이페이지</a>
-                                <a href='/api/users/logout'>로그아웃</a>
-                            </div>
+                    <button type='button' class='header-btn-user' onclick='showUserModal()'>
+                        <img src='${profileImg}' />
+                    </button>     
+                    <div class='header-btn-user-modal'>
+                        <div class='header-btn-user-modal-menu'>
+                            <a href='/mypage'>마이페이지</a>
                         </div>
-                    </div>        
+                        <div class='header-btn-user-modal-signout'>
+                            <button type='button' onclick='signout()'>로그아웃</button>
+                        </div>                                
+                    </div>                    
                 </div>
+                
             `;
             headerRightElements.innerHTML = headerRightHtml;
         }
@@ -53,4 +53,15 @@ function showUserModal() {
         document.querySelector('.header-btn-user-modal').style.display = 'none';
         isUserModalOpen = false;
     }
+}
+
+function signout() {
+    axios
+        .get(`/api/users/signout`)
+        .then((res) => {
+            window.location.href = '/';
+        })
+        .catch((err) => {
+            console.log(err);
+        });
 }
