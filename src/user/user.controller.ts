@@ -70,7 +70,7 @@ export class UserController {
         @Param('userId', ParseIntPipe) userId: number,
         @Req() req,
         @Res() res,
-    ): Promise<{ message: string }> {
+    ) {
         const { userInfo } = req.auth;
         if (userInfo.role !== 1) {
             if (userId !== req.auth.userInfo.userId) {
