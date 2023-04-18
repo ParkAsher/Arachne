@@ -74,6 +74,18 @@ export class UserService {
         }
     }
 
+    /** userId(Primary key)를 가진 데이터 softDelete.
+     * @param userId
+     * @returns void
+     */
+    async withdraw(userId: number): Promise<void> {
+        try {
+            await this.userRepository.softDelete(userId);
+        } catch (error) {
+            throw error;
+        }
+    }
+
     async signInUser(userInfo: signinUserDto) {
         try {
             const user = await this.findUser(userInfo.id);
@@ -128,27 +140,50 @@ export class UserService {
         );
     }
 
-    async getUser(userId: number): Promise<Users> {
-        const userInfo = await this.userRepository.findOne({
-            select: [
-                'id',
+    /** userId(Primary key)의 유저정보를 반환
+     * @param userId
+     * @returns ['id',
                 'name',
                 'email',
                 'nickname',
                 'phone',
                 'role',
-                'profileImg',
-            ],
-            where: { userId },
-        });
+                'profileImg',]
+     */
+    async getUser(userId: number): Promise<Users> {
+        try {
+            const userInfo = await this.userRepository.findOne({
+                select: [
+                    'id',
+                    'name',
+                    'email',
+                    'nickname',
+                    'phone',
+                    'role',
+                    'profileImg',
+                ],
+                where: { userId },
+            });
 
-        return userInfo;
+            return userInfo;
+        } catch (error) {
+            throw error;
+        }
     }
 
+    /** userId(Primary key)를 가진 유저의 정보를 updateUserDto의 정보로 수정
+     * @param userId
+     * @param updateUserDto
+     * @returns void
+     */
     async updateUser(
         userId: number,
         updateUserDto: UpdateUserDto,
     ): Promise<void> {
-        await this.userRepository.update(userId, { ...updateUserDto });
+        try {
+            await this.userRepository.update(userId, { ...updateUserDto });
+        } catch (error) {
+            throw error;
+        }
     }
 }

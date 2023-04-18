@@ -1,8 +1,10 @@
 import {
     Body,
     Controller,
+    Delete,
     Get,
     Param,
+    ParseIntPipe,
     Patch,
     Post,
     Req,
@@ -61,6 +63,33 @@ export class UserController {
         return await this.userService.signUpUser(userInfo);
     }
 
+    // 회원 탈퇴
+    @UseGuards(AuthGuard)
+    @Delete('/:userId')
+    async withdraw(
+        @Param('userId', ParseIntPipe) userId: number,
+        @Req() req,
+        @Res() res,
+    ): Promise<{ message: string }> {
+        const { userInfo } = req.auth;
+        if (userInfo.role !== 1) {
+            if (userId !== req.auth.userInfo.userId) {
+                throw new UnauthorizedException('잘못된 접근입니다.');
+            }
+        }
+
+        await this.userService.withdraw(userId);
+
+        // Access Token, Refresh Token 다 지우기
+        res.clearCookie('accessToken');
+        res.clearCookie('refreshToken');
+
+        // Redis Refresh Token 지우기
+        await this.cacheService.removeRefreshToken(userId);
+
+        return res.send();
+    }
+
     // 로그인
     @Post('/signin')
     async signIn(@Body() userInfo: signinUserDto, @Res() res) {
@@ -78,11 +107,13 @@ export class UserController {
         return res.send();
     }
 
+    // 마이페이지 유저정보 조회
     @Get('/:userId')
     async getUser(@Param('userId') userId: number): Promise<Users> {
         return await this.userService.getUser(userId);
     }
 
+    // 유저정보 수정
     @Patch('/:userId')
     async updateUser(
         @Param('userId') userId: number,
