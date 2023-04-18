@@ -1,5 +1,6 @@
-import { Controller, Get, Render } from '@nestjs/common';
+import { Controller, Get, Render, UseGuards } from '@nestjs/common';
 import { AppService } from './app.service';
+import { AuthGuard } from './auth/guards/auth.guard';
 
 @Controller()
 export class AppController {
@@ -21,5 +22,12 @@ export class AppController {
     @Render('index')
     signin() {
         return { component: 'signin' };
+    }
+
+    @UseGuards(AuthGuard)
+    @Get('mypage')
+    @Render('index')
+    mypage() {
+        return { component: 'mypage' };
     }
 }

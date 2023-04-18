@@ -9,8 +9,8 @@ import { JwtConfigService } from 'src/config/jwt.config.service';
 import { Articles } from 'src/entities/articles.entity';
 import { Categories } from 'src/entities/categories.entity';
 import { Comments } from 'src/entities/comments.entity';
-import { CacheService } from 'src/cache/cache.service';
-import { AuthService } from 'src/auth/auth.service';
+import { AuthModule } from 'src/auth/auth.module';
+import { CacheModule } from 'src/cache/cache.module';
 
 @Module({
     imports: [
@@ -20,8 +20,10 @@ import { AuthService } from 'src/auth/auth.service';
             useClass: JwtConfigService,
             inject: [ConfigService],
         }),
+        AuthModule,
+        CacheModule,
     ],
     controllers: [UserController],
-    providers: [UserService, CacheService, AuthService],
+    providers: [UserService],
 })
 export class UserModule {}
