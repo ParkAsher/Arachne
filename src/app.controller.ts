@@ -22,4 +22,10 @@ export class AppController {
     signin() {
         return { component: 'signin' };
     }
+
+    @Get('backuser')
+    @Render('index')
+    backuser() {
+        return { component: 'backuser' };
+    }
 }
