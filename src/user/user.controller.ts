@@ -71,7 +71,11 @@ export class UserController {
         @Req() req,
         @Res() res,
     ) {
-        const { userInfo } = req.auth;
+        const { isLoggedIn, userInfo } = req.auth;
+        if (!isLoggedIn) {
+            throw new UnauthorizedException('로그인 중이 아닙니다.');
+        }
+
         if (userInfo.role !== 1) {
             if (userId !== req.auth.userInfo.userId) {
                 throw new UnauthorizedException('잘못된 접근입니다.');
