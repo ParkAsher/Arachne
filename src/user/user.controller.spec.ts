@@ -147,7 +147,7 @@ describe('UserController', () => {
             res.send = jest.fn();
 
             // When
-            const result = await userController.withdraw(param, req, res);
+            await userController.withdraw(param, req, res);
 
             // Then
             expect(res.clearCookie).toHaveBeenCalledTimes(2);
@@ -173,7 +173,7 @@ describe('UserController', () => {
 
             // When
             try {
-                const result = await userController.withdraw(param, req, res);
+                await userController.withdraw(param, req, res);
             } catch (error) {
                 // Then
                 expect(error.message).toEqual('잘못된 접근입니다.');
@@ -200,13 +200,38 @@ describe('UserController', () => {
             res.send = jest.fn();
 
             // When
-            const result = await userController.withdraw(param, req, res);
+            await userController.withdraw(param, req, res);
 
             // Then
             expect(res.clearCookie).toHaveBeenCalledTimes(2);
             expect(res.clearCookie).toHaveBeenCalledWith('accessToken');
             expect(res.clearCookie).toHaveBeenCalledWith('refreshToken');
             expect(res.send).toHaveBeenCalledTimes(1);
+        });
+
+        it('로그인이 되어 있지 않을 때', async () => {
+            // Given
+            const req = mocks.createRequest();
+            const res = mocks.createResponse();
+            req.auth = {
+                isLoggedIn: false,
+                userInfo: {
+                    nickname: 'testNick',
+                    profileImg: 'testImg',
+                    role: 1,
+                    userId: UserDummy[0].userId,
+                },
+            };
+            const param: number = UserDummy[1].userId;
+
+            // When
+            try {
+                await userController.withdraw(param, req, res);
+            } catch (error) {
+                // Then
+                expect(error.message).toEqual('로그인 중이 아닙니다.');
+                expect(error).toBeInstanceOf(UnauthorizedException);
+            }
         });
     });
 });
