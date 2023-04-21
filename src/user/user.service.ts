@@ -151,4 +151,18 @@ export class UserService {
     ): Promise<void> {
         await this.userRepository.update(userId, { ...updateUserDto });
     }
+
+    async getAllUser(): Promise<Users> {
+        return await this.userRepository.findAll({
+            select: [
+                'id',
+                'name',
+                'email',
+                'nickname',
+                'phone',
+                'role',
+                'profileImg',
+            ],
+        });
+    }
 }

@@ -91,4 +91,10 @@ export class UserController {
         await this.userService.updateUser(userId, updateUserDto);
         return { message: '수정 되었습니다.' };
     }
+
+    // 모든 회원 정보 불러오기
+    @Get('/')
+    async getAllUser(): Promise<Users> {
+        return await this.userService.getAllUser();
+    }
 }
