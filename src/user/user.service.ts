@@ -187,6 +187,7 @@ export class UserService {
         }
     }
 
+    // 백오피스 - 전체 유저 조회
     async getAllUser(): Promise<Users[]> {
         return await this.userRepository.find({
             select: [
@@ -199,5 +200,14 @@ export class UserService {
                 'profileImg',
             ],
         });
+    }
+
+    // 백오피스 - 유저 삭제
+    async deleteUser(userId: number): Promise<void> {
+        try {
+            await this.userRepository.delete(userId);
+        } catch (error) {
+            throw error;
+        }
     }
 }
