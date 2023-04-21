@@ -187,8 +187,8 @@ export class UserService {
         }
     }
 
-    async getAllUser(): Promise<Users> {
-        return await this.userRepository.findAll({
+    async getAllUser(): Promise<Users[]> {
+        return await this.userRepository.find({
             select: [
                 'id',
                 'name',

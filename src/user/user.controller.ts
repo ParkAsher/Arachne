@@ -129,7 +129,7 @@ export class UserController {
 
     // 모든 회원 정보 불러오기
     @Get('/')
-    async getAllUser(): Promise<Users> {
+    async getAllUser(): Promise<Users[]> {
         return await this.userService.getAllUser();
     }
 }
