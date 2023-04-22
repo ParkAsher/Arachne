@@ -29,7 +29,13 @@ export class UserController {
     @UseGuards(AuthGuard)
     @Get('/isLoggedIn')
     async isLoggedIn(@Req() req) {
-        const { isLoggedIn, userInfo } = req.auth;
+        const { isLoggedIn, userId } = req.auth;
+
+        if (!isLoggedIn) {
+            return { isLoggedIn, userInfo: null };
+        }
+
+        const userInfo = await this.userService.findUserByUserId(userId);
 
         return { isLoggedIn, userInfo };
     }
@@ -38,7 +44,7 @@ export class UserController {
     @UseGuards(AuthGuard)
     @Get('/signout')
     async signOut(@Req() req, @Res() res) {
-        const { isLoggedIn, userInfo } = req.auth;
+        const { isLoggedIn, userId } = req.auth;
 
         // 이미 로그아웃 상태라면 불가능한 기능
         if (!isLoggedIn) {
@@ -50,7 +56,7 @@ export class UserController {
         res.clearCookie('refreshToken');
 
         // Redis Refresh Token 지우기
-        await this.cacheService.removeRefreshToken(userInfo.userId);
+        await this.cacheService.removeRefreshToken(userId);
 
         return res.send();
     }
@@ -78,9 +84,10 @@ export class UserController {
         return res.send();
     }
 
-    @Get('/:userId')
+    // 마이페이지 회원 정보 가져오기
+    @Get('/')
     async getUser(@Param('userId') userId: number): Promise<Users> {
-        return await this.userService.getUser(userId);
+        return await this.userService.findUserByUserId(userId);
     }
 
     @Patch('/:userId')
