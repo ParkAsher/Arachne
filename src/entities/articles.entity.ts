@@ -24,6 +24,7 @@ export class Articles {
     */
     @ManyToOne(() => Users, (users) => users.Articles, {
         onDelete: 'CASCADE',
+        nullable: false,
     })
     @JoinColumn({ name: 'user_id' })
     Users: Users;
@@ -40,7 +41,9 @@ export class Articles {
     /*
         article - category : Many To One
     */
-    @ManyToOne(() => Categories, (categories) => categories.Articles)
+    @ManyToOne(() => Categories, (categories) => categories.Articles, {
+        nullable: false,
+    })
     @JoinColumn({ name: 'category_id' })
     Categories: Categories;
 
