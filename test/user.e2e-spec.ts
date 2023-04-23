@@ -11,9 +11,8 @@ import { UpdateUserDto } from 'src/user/dto/update-user.dto';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RedisModule } from '@liaoliaots/nestjs-redis';
 
-describe('AppController (e2e)', () => {
+describe('UserController (e2e)', () => {
     let app: INestApplication;
-    // let userService: UserService;
     let server: request.SuperTest<request.Test>;
     let userRepository: Repository<Users>;
 

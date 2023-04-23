@@ -29,6 +29,9 @@ export class Articles {
     @JoinColumn({ name: 'user_id' })
     Users: Users;
 
+    @Column()
+    user_id: number;
+
     @Column('varchar', { nullable: false })
     title: string;
 
@@ -36,11 +39,11 @@ export class Articles {
     content: string;
 
     @Column('int', { nullable: true, default: 0 })
-    view: string;
+    view: number;
 
     /*
         article - category : Many To One
-    */
+        */
     @ManyToOne(() => Categories, (categories) => categories.Articles, {
         nullable: false,
     })
@@ -49,6 +52,9 @@ export class Articles {
 
     @CreateDateColumn({ nullable: true })
     readonly createdAt: Date;
+
+    @Column()
+    category_id: number;
 
     @UpdateDateColumn({ nullable: true })
     readonly updatedAt: Date;
