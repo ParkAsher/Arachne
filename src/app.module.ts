@@ -12,6 +12,7 @@ import { CacheModule } from './cache/cache.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtConfigService } from './config/jwt.config.service';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
     imports: [
@@ -35,6 +36,7 @@ import { JwtConfigService } from './config/jwt.config.service';
         ArticleModule,
         CacheModule,
         AuthModule,
+        UploadModule,
     ],
     controllers: [AppController],
     providers: [AppService],
