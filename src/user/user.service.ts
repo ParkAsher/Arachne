@@ -205,7 +205,7 @@ export class UserService {
     // 백오피스 - 유저 삭제
     async deleteUser(userId: number): Promise<void> {
         try {
-            await this.userRepository.delete(userId);
+            await this.userRepository.softDelete(userId);
         } catch (error) {
             throw error;
         }
