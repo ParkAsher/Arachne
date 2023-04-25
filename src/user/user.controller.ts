@@ -19,6 +19,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { Users } from 'src/entities/users.entity';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { CacheService } from 'src/cache/cache.service';
+import { BackUpdateUserDto } from './dto/back-update-user.dto';
 
 @Controller('/api/users')
 export class UserController {
@@ -140,5 +141,15 @@ export class UserController {
     ): Promise<{ message: string }> {
         await this.userService.deleteUser(userId);
         return { message: '회원이 삭제되었습니다.' };
+    }
+
+    // 백오피스 - 유저 정보 수정
+    @Patch('/back/:userId')
+    async backUpdateUser(
+        @Param('userId') userId: number,
+        @Body() backUpdateUserDto: BackUpdateUserDto,
+    ): Promise<{ message: string }> {
+        await this.userService.updateUser(userId, backUpdateUserDto);
+        return { message: '수정 되었습니다.' };
     }
 }
