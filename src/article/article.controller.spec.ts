@@ -9,6 +9,7 @@ describe('ArticleController', () => {
 
     const mockService = {
         getArticles: jest.fn(),
+        getArticleById: jest.fn(),
     };
 
     beforeEach(async () => {
@@ -30,7 +31,7 @@ describe('ArticleController', () => {
     });
 
     afterEach(async () => {
-        await jest.clearAllMocks();
+        await jest.resetAllMocks();
     });
 
     describe('게시글 전체조회', () => {
@@ -40,7 +41,10 @@ describe('ArticleController', () => {
                 {
                     articleId: ArticleDummy[0].articleId,
                     title: ArticleDummy[0].title,
-                    view: ArticleDummy[0].view,
+                    views: ArticleDummy[0].view,
+                    Likes: {
+                        likes: expect.any(Number),
+                    },
                     Users: {
                         nickname: expect.any(String),
                     },
@@ -55,6 +59,60 @@ describe('ArticleController', () => {
 
             // Then
             expect(mockService.getArticles).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    describe('게시글 상세조회', () => {
+        it('service.getArticleById 호출', async () => {
+            // Given
+            const param: number = ArticleDummy[0].articleId;
+
+            mockService.getArticleById.mockResolvedValue({
+                articleId: expect.any(Number),
+                title: expect.any(String),
+                views: expect.any(Number),
+                Users: {
+                    nickname: expect.any(String),
+                },
+                Categories: {
+                    categoryName: expect.any(String),
+                },
+                Likes: {
+                    likes: expect.any(Number),
+                },
+            });
+
+            // When
+            await controller.getArticleById(param);
+
+            // Then
+            expect(mockService.getArticleById).toHaveBeenCalledTimes(1);
+        });
+
+        it('parameter 전달 제대로 하는지', async () => {
+            // Given
+            const param: number = ArticleDummy[0].articleId;
+
+            mockService.getArticleById.mockResolvedValue({
+                articleId: expect.any(Number),
+                title: expect.any(String),
+                views: expect.any(Number),
+                Users: {
+                    nickname: expect.any(String),
+                },
+                Categories: {
+                    categoryName: expect.any(String),
+                },
+                Likes: {
+                    likes: expect.any(Number),
+                },
+            });
+
+            // When
+            await controller.getArticleById(param);
+
+            // Then
+            expect(mockService.getArticleById).toHaveBeenCalledWith(param);
         });
     });
 });
