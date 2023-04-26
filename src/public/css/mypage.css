@@ -1,0 +1,116 @@
+.mypage-wrap {
+    width: 100%;
+    padding-top: 2.5rem;
+}
+
+.mypage-container {
+    width: 1280px;
+    margin: 0 auto;
+}
+
+.mypage-title {
+    width: 100%;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.mypage-content {
+    width: 100%;
+    padding: 3rem 0 2rem 0;
+    border-bottom: 1px solid #7f7f66;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.mypage-content-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+}
+
+.profile-image-view {
+    width: 15rem;
+    height: 15rem;
+    border: 1px solid #7f7f66;
+    border-radius: 50%;
+    object-fit: contain;
+}
+
+.profile-image-label {
+    color: #ffffff;
+    font-size: 0.875rem;
+    background-color: #7f7f66;
+    padding: 0.5rem 1.5rem;
+    cursor: pointer;
+    border-radius: 0.375rem;
+}
+
+.mypage-content-id-wrap,
+.mypage-content-nickname-wrap,
+.mypage-content-name-wrap,
+.mypage-content-email-wrap {
+    margin-bottom: 2rem;
+}
+
+.mypage-content-title {
+    width: 100%;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 0.875rem;
+}
+
+.mypage-input {
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
+    color: #ffffff;
+    line-height: 1.5rem;
+    background-color: #2f2f2f;
+    box-sizing: border-box;
+    border: 1px solid #7f7f66;
+    border-radius: 0.375rem;
+    appearance: none;
+    margin-top: 0.5rem;
+    width: 100%;
+}
+
+.mypage-input:disabled {
+    color: gray;
+}
+
+.mypage-input[type='file'] {
+    display: none;
+}
+
+.mypage-update-btn-wrap {
+    width: 100%;
+
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.mypage-update-btn {
+    color: #ffffff;
+    font-size: 0.875rem;
+    background-color: #7f7f66;
+    cursor: pointer;
+    border-radius: 0.375rem;
+    border: none;
+    padding: 0.5rem 1.5rem;
+}
+
+.mypage-update-btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.mypage-error-message {
+    font-size: 0.75rem;
+    padding: 0.375rem 0;
+    color: red;
+}

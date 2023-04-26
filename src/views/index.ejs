@@ -15,10 +15,12 @@
         <link rel="stylesheet" href="/css/header.css" />
         <link rel="stylesheet" href="/css/signup.css" />
         <link rel="stylesheet" href="/css/signin.css" />
+        <link rel="stylesheet" href="/css/mypage.css" />
     </head>
     <body>
         <% if (component === 'main') { %> <%- include('main.ejs') %> <% } %> <%
         if (component === 'signup') { %> <%- include('signup.ejs') %> <% } %> <%
-        if (component === 'signin') { %> <%- include('signin.ejs') %> <% } %>
+        if (component === 'signin') { %> <%- include('signin.ejs') %> <% } %> <%
+        if (component === 'mypage') { %> <%- include('mypage.ejs') %> <% } %>
     </body>
 </html>
