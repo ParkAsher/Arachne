@@ -4,7 +4,6 @@ import {
     DeleteDateColumn,
     Entity,
     JoinColumn,
-    ManyToMany,
     ManyToOne,
     OneToMany,
     PrimaryGeneratedColumn,
@@ -13,6 +12,7 @@ import {
 import { Comments } from './comments.entity';
 import { Users } from './users.entity';
 import { Categories } from './categories.entity';
+import { Likes } from './likes.entity';
 
 @Entity({ schema: 'arachne', name: 'Articles' })
 export class Articles {
@@ -29,7 +29,7 @@ export class Articles {
     @JoinColumn({ name: 'user_id' })
     Users: Users;
 
-    @Column()
+    @Column({ type: 'int', unsigned: true })
     user_id: number;
 
     @Column('varchar', { nullable: false })
@@ -53,7 +53,7 @@ export class Articles {
     @CreateDateColumn({ nullable: true })
     readonly createdAt: Date;
 
-    @Column()
+    @Column({ type: 'int', unsigned: true })
     category_id: number;
 
     @UpdateDateColumn({ nullable: true })
@@ -69,10 +69,10 @@ export class Articles {
     Comments: Comments[];
 
     /*
-        article - user : Many To Many
+        article - like : One To Many
     */
-    @ManyToMany(() => Users, (users) => users.LikesArticles, {
+    @OneToMany(() => Likes, (likes) => likes.Articles, {
         onDelete: 'CASCADE',
     })
-    LikesUsers: Users[];
+    Likes: Likes[];
 }

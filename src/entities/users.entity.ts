@@ -4,14 +4,13 @@ import {
     DeleteDateColumn,
     Entity,
     Index,
-    JoinTable,
-    ManyToMany,
     OneToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
 import { Comments } from './comments.entity';
 import { Articles } from './articles.entity';
+import { Likes } from './likes.entity';
 
 @Entity({ schema: 'arachne', name: 'Users' })
 export class Users {
@@ -68,20 +67,10 @@ export class Users {
     Articles: Articles[];
 
     /*
-        user - article : Many To Many
-        (Likes)
+        user - like : One To Many
     */
-    @ManyToMany(() => Articles, (articles) => articles.LikesUsers)
-    @JoinTable({
-        name: 'Likes',
-        joinColumn: {
-            name: 'user_id',
-            referencedColumnName: 'userId',
-        },
-        inverseJoinColumn: {
-            name: 'article_id',
-            referencedColumnName: 'articleId',
-        },
+    @OneToMany(() => Likes, (likes) => likes.Users, {
+        onDelete: 'CASCADE',
     })
-    LikesArticles: Articles[];
+    Likes: Likes[];
 }
