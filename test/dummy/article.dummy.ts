@@ -40,7 +40,7 @@ export const ArticleDummy = [
         createdAt: new Date(),
         updatedAt: new Date(),
         deletedAt: null,
-        user_id: 4,
+        user_id: 3,
         category_id: 4,
     },
 ];

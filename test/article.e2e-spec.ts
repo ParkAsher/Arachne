@@ -14,6 +14,8 @@ import { Categories } from 'src/entities/categories.entity';
 import { UserDummy } from './dummy/user.dummy';
 import { ArticleDummy } from './dummy/article.dummy';
 import { CategoryDummy } from './dummy/category.dummy';
+import { Likes } from 'src/entities/likes.entity';
+import { LikeDummy } from './dummy/like.dummy';
 
 describe('ArticleController (e2e)', () => {
     let app: INestApplication;
@@ -21,6 +23,7 @@ describe('ArticleController (e2e)', () => {
     let userRepository: Repository<Users>;
     let articleRepository: Repository<Articles>;
     let categoryRepository: Repository<Categories>;
+    let likeRepository: Repository<Likes>;
 
     const authGuardValue = (role: number) => ({
         canActivate(context: ExecutionContext) {
@@ -61,10 +64,12 @@ describe('ArticleController (e2e)', () => {
         userRepository = moduleFixture.get(getRepositoryToken(Users));
         articleRepository = moduleFixture.get(getRepositoryToken(Articles));
         categoryRepository = moduleFixture.get(getRepositoryToken(Categories));
+        likeRepository = moduleFixture.get(getRepositoryToken(Likes));
 
         await userRepository.insert(UserDummy);
         await articleRepository.insert(ArticleDummy);
         await categoryRepository.insert(CategoryDummy);
+        await likeRepository.insert(LikeDummy);
 
         await app.init();
     };
@@ -91,11 +96,51 @@ describe('ArticleController (e2e)', () => {
                 ArticleDummy.map((article) => ({
                     articleId: article.articleId,
                     title: article.title,
-                    view: article.view,
+                    views: article.view,
+                    likes: expect.any(Number),
                     nickname: expect.any(String),
                     categoryName: expect.any(String),
                 })),
             );
+        });
+    });
+
+    describe('/api/articles/:articleId GET', () => {
+        it('return value 구조', async () => {
+            // Given
+            const INDEX: number = 1;
+            const articleId: number = ArticleDummy[INDEX].articleId;
+            const url: string = `/api/articles/${articleId}`;
+            let likeCount: number = 0;
+
+            LikeDummy.forEach((like) => {
+                if (like.articleId === articleId) {
+                    likeCount += 1;
+                }
+            });
+
+            const [{ nickname }] = UserDummy.filter(
+                (user) => user.userId === ArticleDummy[INDEX].user_id,
+            );
+
+            const [{ name: categoryName }] = CategoryDummy.filter(
+                (category) =>
+                    category.category_id === ArticleDummy[INDEX].category_id,
+            );
+
+            // When
+            const res = await server.get(url);
+
+            // Then
+            expect(res.status).toBe(200);
+            expect(res.body).toEqual({
+                articleId: ArticleDummy[INDEX].articleId,
+                title: ArticleDummy[INDEX].title,
+                views: res.body.views,
+                likes: likeCount,
+                nickname,
+                categoryName,
+            });
         });
     });
 });
