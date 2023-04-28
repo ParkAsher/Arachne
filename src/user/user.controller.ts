@@ -1,8 +1,10 @@
 import {
     Body,
     Controller,
+    Delete,
     Get,
     Param,
+    ParseIntPipe,
     Patch,
     Post,
     Req,
@@ -65,6 +67,37 @@ export class UserController {
     @Post('/signup')
     async signUp(@Body() userInfo: signupUserDto) {
         return await this.userService.signUpUser(userInfo);
+    }
+
+    // 회원 탈퇴
+    @UseGuards(AuthGuard)
+    @Delete('/:userId')
+    async withdraw(
+        @Param('userId', ParseIntPipe) userId: number,
+        @Req() req,
+        @Res() res,
+    ) {
+        const { isLoggedIn, userInfo } = req.auth;
+        if (!isLoggedIn) {
+            throw new UnauthorizedException('로그인 중이 아닙니다.');
+        }
+
+        if (userInfo.role !== 1) {
+            if (userId !== req.auth.userInfo.userId) {
+                throw new UnauthorizedException('잘못된 접근입니다.');
+            }
+        }
+
+        await this.userService.withdraw(userId);
+
+        // Access Token, Refresh Token 다 지우기
+        res.clearCookie('accessToken');
+        res.clearCookie('refreshToken');
+
+        // Redis Refresh Token 지우기
+        await this.cacheService.removeRefreshToken(userId);
+
+        return res.send();
     }
 
     // 로그인

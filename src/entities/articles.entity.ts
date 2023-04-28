@@ -4,6 +4,7 @@ import {
     DeleteDateColumn,
     Entity,
     JoinColumn,
+    JoinTable,
     ManyToMany,
     ManyToOne,
     OneToMany,
@@ -13,6 +14,7 @@ import {
 import { Comments } from './comments.entity';
 import { Users } from './users.entity';
 import { Categories } from './categories.entity';
+import { Likes } from './likes.entity';
 
 @Entity({ schema: 'arachne', name: 'Articles' })
 export class Articles {
@@ -24,9 +26,13 @@ export class Articles {
     */
     @ManyToOne(() => Users, (users) => users.Articles, {
         onDelete: 'CASCADE',
+        nullable: false,
     })
     @JoinColumn({ name: 'user_id' })
     Users: Users;
+
+    @Column({ type: 'int', unsigned: true })
+    user_id: number;
 
     @Column('varchar', { nullable: false })
     title: string;
@@ -35,17 +41,22 @@ export class Articles {
     content: string;
 
     @Column('int', { nullable: true, default: 0 })
-    view: string;
+    view: number;
 
     /*
         article - category : Many To One
-    */
-    @ManyToOne(() => Categories, (categories) => categories.Articles)
+        */
+    @ManyToOne(() => Categories, (categories) => categories.Articles, {
+        nullable: false,
+    })
     @JoinColumn({ name: 'category_id' })
     Categories: Categories;
 
     @CreateDateColumn({ nullable: true })
     readonly createdAt: Date;
+
+    @Column({ type: 'int', unsigned: true })
+    category_id: number;
 
     @UpdateDateColumn({ nullable: true })
     readonly updatedAt: Date;
@@ -58,6 +69,14 @@ export class Articles {
     */
     @OneToMany(() => Comments, (comments) => comments.Articles)
     Comments: Comments[];
+
+    /*
+        article - like : One To Many
+    */
+    @OneToMany(() => Likes, (likes) => likes.Articles, {
+        onDelete: 'CASCADE',
+    })
+    Likes: Likes[];
 
     /*
         article - user : Many To Many

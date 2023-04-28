@@ -18,7 +18,7 @@ export class Categories {
     })
     categoryId: number;
 
-    @Column({ type: 'int', nullable: false })
+    @Column({ type: 'varchar', nullable: false })
     name: string;
 
     @CreateDateColumn({ nullable: true })

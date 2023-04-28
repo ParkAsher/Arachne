@@ -1,22 +1,38 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { ExecutionContext, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { UserModule } from 'src/user/user.module';
-import { UserService } from 'src/user/user.service';
 import { Repository } from 'typeorm';
 import { Users } from 'src/entities/users.entity';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
 import { UserDummy } from './dummy/user.dummy';
 import { UpdateUserDto } from 'src/user/dto/update-user.dto';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { RedisModule } from '@liaoliaots/nestjs-redis';
 
-describe('AppController (e2e)', () => {
+describe('UserController (e2e)', () => {
     let app: INestApplication;
-    // let userService: UserService;
     let server: request.SuperTest<request.Test>;
     let userRepository: Repository<Users>;
 
-    beforeEach(async () => {
+    const authGuardValue = (role: number) => ({
+        canActivate(context: ExecutionContext) {
+            const request = context.switchToHttp().getRequest();
+            request.auth = {
+                isLoggedIn: true,
+                userInfo: {
+                    nickname: 'testNick',
+                    profileImg: 'testImg',
+                    role: role,
+                    userId: UserDummy[0].userId,
+                },
+            };
+            return true;
+        },
+    });
+
+    const initApp = async (role: number) => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [
                 ConfigModule.forRoot({ isGlobal: true }),
@@ -27,28 +43,40 @@ describe('AppController (e2e)', () => {
                     synchronize: true,
                     logging: false,
                 }),
+                RedisModule.forRoot({
+                    config: {
+                        url: process.env.REDIS_URL,
+                        password: process.env.REDIS_PASSWORD,
+                    },
+                }),
                 UserModule,
             ],
-        }).compile();
+        })
+            .overrideGuard(AuthGuard)
+            .useValue(authGuardValue(role))
+            .compile();
 
         app = moduleFixture.createNestApplication();
-        // userService = moduleFixture.get<UserService>(UserService);
         server = request(app.getHttpServer());
         userRepository = moduleFixture.get(getRepositoryToken(Users));
 
         await userRepository.insert(UserDummy);
 
         await app.init();
+    };
+
+    beforeEach(async () => {
+        await initApp(1);
     });
 
     afterAll(async () => {
         await app.close();
     });
 
-    describe('/api/user/1 GET', () => {
+    describe('/api/users/1 GET', () => {
         it('유저 상세정보 가져오기 ', async () => {
             // Given
-            const url = `/api/user/${UserDummy[0].userId}`;
+            const url = `/api/users/${UserDummy[0].userId}`;
 
             // When
             const res = await server.get(url);
@@ -67,10 +95,10 @@ describe('AppController (e2e)', () => {
         });
     });
 
-    describe('/api/user/1 PATCH', () => {
+    describe('/api/users/1 PATCH', () => {
         it('유저 정보 수정하기 - 닉네임 ', async () => {
             // Given
-            const url = `/api/user/${UserDummy[0].userId}`;
+            const url = `/api/users/${UserDummy[0].userId}`;
             const updateUserDto: UpdateUserDto = {
                 nickname: 'updateAdminNickname',
             };
@@ -83,6 +111,51 @@ describe('AppController (e2e)', () => {
             expect(res.body).toEqual({
                 message: '수정 되었습니다.',
             });
+        });
+    });
+
+    describe('/api/users/1 DELETE', () => {
+        beforeEach(async () => {
+            await initApp(2);
+        });
+        it('admin이 아니고 param, guard의 userId가 다를 경우', async () => {
+            // Give
+            const url = `/api/users/${UserDummy[1].userId}`;
+
+            // When
+            const res = await server.delete(url);
+
+            // Then
+            expect(res.status).toBe(401);
+            expect(res.body.message).toBe('잘못된 접근입니다.');
+            expect(res.body.error).toBe('Unauthorized');
+        });
+
+        it('admin이 아니고 param, guard의 userId가 같을 경우', async () => {
+            // Give
+            const url = `/api/users/${UserDummy[0].userId}`;
+
+            // When
+            const res = await server.delete(url);
+
+            // Then
+            expect(res.status).toBe(200);
+        });
+    });
+
+    describe('/api/users/1 DELETE', () => {
+        beforeEach(async () => {
+            await initApp(1);
+        });
+        it('admin이고 param, guard의 userId가 다른 경우', async () => {
+            // Give
+            const url = `/api/users/${UserDummy[1].userId}`;
+
+            // When
+            const res = await server.delete(url);
+
+            // Then
+            expect(res.status).toBe(200);
         });
     });
 });

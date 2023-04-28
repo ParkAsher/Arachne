@@ -12,6 +12,7 @@ import {
 } from 'typeorm';
 import { Comments } from './comments.entity';
 import { Articles } from './articles.entity';
+import { Likes } from './likes.entity';
 
 @Entity({ schema: 'arachne', name: 'Users' })
 export class Users {
@@ -66,6 +67,14 @@ export class Users {
     */
     @OneToMany(() => Articles, (articles) => articles.Users)
     Articles: Articles[];
+
+    /*
+        user - like : One To Many
+    */
+    @OneToMany(() => Likes, (likes) => likes.Users, {
+        onDelete: 'CASCADE',
+    })
+    Likes: Likes[];
 
     /*
         user - article : Many To Many

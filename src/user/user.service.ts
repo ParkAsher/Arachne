@@ -90,6 +90,18 @@ export class UserService {
         }
     }
 
+    /** userId(Primary key)를 가진 데이터 softDelete.
+     * @param userId
+     * @returns void
+     */
+    async withdraw(userId: number): Promise<void> {
+        try {
+            await this.userRepository.softDelete(userId);
+        } catch (error) {
+            throw error;
+        }
+    }
+
     async signInUser(userInfo: signinUserDto) {
         try {
             const user = await this.findUser(userInfo.id);
