@@ -31,7 +31,13 @@ export class UserController {
     @UseGuards(AuthGuard)
     @Get('/isLoggedIn')
     async isLoggedIn(@Req() req) {
-        const { isLoggedIn, userInfo } = req.auth;
+        const { isLoggedIn, userId } = req.auth;
+
+        if (!isLoggedIn) {
+            return { isLoggedIn, userInfo: null };
+        }
+
+        const userInfo = await this.userService.findUserByUserId(userId);
 
         return { isLoggedIn, userInfo };
     }
@@ -40,7 +46,7 @@ export class UserController {
     @UseGuards(AuthGuard)
     @Get('/signout')
     async signOut(@Req() req, @Res() res) {
-        const { isLoggedIn, userInfo } = req.auth;
+        const { isLoggedIn, userId } = req.auth;
 
         // 이미 로그아웃 상태라면 불가능한 기능
         if (!isLoggedIn) {
@@ -52,7 +58,7 @@ export class UserController {
         res.clearCookie('refreshToken');
 
         // Redis Refresh Token 지우기
-        await this.cacheService.removeRefreshToken(userInfo.userId);
+        await this.cacheService.removeRefreshToken(userId);
 
         return res.send();
     }
@@ -111,19 +117,29 @@ export class UserController {
         return res.send();
     }
 
-    // 마이페이지 유저정보 조회
-    @Get('/:userId')
-    async getUser(@Param('userId') userId: number): Promise<Users> {
-        return await this.userService.getUser(userId);
+    // 마이페이지 회원 정보 가져오기
+    @UseGuards(AuthGuard)
+    @Get('/')
+    async getUser(@Req() req): Promise<Users> {
+        const { isLoggedIn, userId } = req.auth;
+
+        if (!isLoggedIn) {
+            throw new UnauthorizedException('로그인 중이 아닙니다.');
+        }
+
+        return await this.userService.findUserByUserId(userId);
     }
 
-    // 유저정보 수정
-    @Patch('/:userId')
-    async updateUser(
-        @Param('userId') userId: number,
-        @Body() updateUserDto: UpdateUserDto,
-    ): Promise<{ message: string }> {
-        await this.userService.updateUser(userId, updateUserDto);
-        return { message: '수정 되었습니다.' };
+    // 마이페이지 회원 정보 수정
+    @UseGuards(AuthGuard)
+    @Patch('/')
+    async updateUser(@Body() userInfo: UpdateUserDto, @Req() req) {
+        const { isLoggedIn, userId } = req.auth;
+
+        if (!isLoggedIn) {
+            throw new UnauthorizedException('로그인 중이 아닙니다.');
+        }
+
+        return await this.userService.updateUserProfile(userId, userInfo);
     }
 }

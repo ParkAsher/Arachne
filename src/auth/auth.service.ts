@@ -31,12 +31,4 @@ export class AuthService {
             expiresIn: '1m',
         });
     }
-
-    // 회원 정보 가져오기
-    async findUserByUserId(userId: number) {
-        return await this.userRepository.findOne({
-            select: ['nickname', 'profileImg', 'role'],
-            where: { userId },
-        });
-    }
 }

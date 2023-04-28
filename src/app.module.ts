@@ -10,6 +10,9 @@ import { RedisModule } from '@liaoliaots/nestjs-redis';
 import { RedisConfigService } from './config/redis.config.service';
 import { CacheModule } from './cache/cache.module';
 import { AuthModule } from './auth/auth.module';
+import { JwtModule } from '@nestjs/jwt';
+import { JwtConfigService } from './config/jwt.config.service';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
     imports: [
@@ -24,10 +27,16 @@ import { AuthModule } from './auth/auth.module';
             useClass: RedisConfigService,
             inject: [ConfigService],
         }),
+        JwtModule.registerAsync({
+            imports: [ConfigModule],
+            useClass: JwtConfigService,
+            inject: [ConfigService],
+        }),
         UserModule,
         ArticleModule,
         CacheModule,
         AuthModule,
+        UploadModule,
     ],
     controllers: [AppController],
     providers: [AppService],

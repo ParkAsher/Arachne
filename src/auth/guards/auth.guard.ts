@@ -23,7 +23,7 @@ export class AuthGuard implements CanActivate {
             response.clearCookie('accessToken');
             response.clearCookie('refreshToken');
 
-            request.auth = { isLoggedIn: false, userInfo: null };
+            request.auth = { isLoggedIn: false, userId: null };
 
             return true;
         }
@@ -65,7 +65,7 @@ export class AuthGuard implements CanActivate {
             // Redis Refresh Token Clear
             await this.cacheService.removeRefreshToken(userId);
 
-            request.auth = { isLoggedIn: false, userInfo: null };
+            request.auth = { isLoggedIn: false, userId: null };
 
             return true;
         }
@@ -80,11 +80,7 @@ export class AuthGuard implements CanActivate {
             response.cookie('accessToken', newAccessToken, { httpOnly: true });
         }
 
-        // 회원 정보 가져오기
-        const userInfo = await this.authService.findUserByUserId(userId);
-        userInfo.userId = userId;
-
-        request.auth = { isLoggedIn: true, userInfo };
+        request.auth = { isLoggedIn: true, userId };
 
         return true;
     }

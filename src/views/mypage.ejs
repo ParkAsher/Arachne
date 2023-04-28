@@ -1,0 +1,76 @@
+<%- include('header.ejs') %>
+
+<div class="mypage-wrap">
+    <div class="mypage-container">
+        <div class="mypage-title">회원정보</div>
+        <div class="mypage-content">
+            <div class="mypage-content-left">
+                <img id="profile-image-view" class="profile-image-view" />
+                <label class="profile-image-label" for="profile-image">
+                    업로드
+                </label>
+                <input
+                    type="file"
+                    id="profile-image"
+                    name="profile-image"
+                    class="mypage-input"
+                    placeholder="프로필 이미지"
+                    accept="image/*"
+                />
+            </div>
+            <div class="mypage-content-right">
+                <div class="mypage-content-id-wrap">
+                    <div class="mypage-content-title">아이디</div>
+                    <input
+                        type="text"
+                        id="id"
+                        name="id"
+                        class="mypage-input"
+                        disabled
+                    />
+                </div>
+                <div class="mypage-content-nickname-wrap">
+                    <div class="mypage-content-title">닉네임</div>
+                    <input
+                        type="text"
+                        id="nickname"
+                        name="nickname"
+                        class="mypage-input"
+                    />
+                </div>
+                <div class="mypage-content-name-wrap">
+                    <div class="mypage-content-title">이름</div>
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        class="mypage-input"
+                        disabled
+                    />
+                </div>
+                <div class="mypage-content-email-wrap">
+                    <div class="mypage-content-title">이메일</div>
+                    <input
+                        type="text"
+                        id="email"
+                        name="email"
+                        class="mypage-input"
+                    />
+                </div>
+                <div class="mypage-update-btn-wrap">
+                    <button
+                        id="mypage-update-btn"
+                        class="mypage-update-btn"
+                        type="button"
+                        onclick="updateUserInfo()"
+                        disabled
+                    >
+                        저장
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script defer src="/js/mypage.js"></script>
