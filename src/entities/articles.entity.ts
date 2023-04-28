@@ -4,6 +4,8 @@ import {
     DeleteDateColumn,
     Entity,
     JoinColumn,
+    JoinTable,
+    ManyToMany,
     ManyToOne,
     OneToMany,
     PrimaryGeneratedColumn,
@@ -75,4 +77,12 @@ export class Articles {
         onDelete: 'CASCADE',
     })
     Likes: Likes[];
+
+    /*
+        article - user : Many To Many
+    */
+    @ManyToMany(() => Users, (users) => users.LikesArticles, {
+        onDelete: 'CASCADE',
+    })
+    LikesUsers: Users[];
 }

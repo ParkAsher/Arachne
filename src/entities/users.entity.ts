@@ -4,6 +4,8 @@ import {
     DeleteDateColumn,
     Entity,
     Index,
+    JoinTable,
+    ManyToMany,
     OneToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
@@ -73,4 +75,22 @@ export class Users {
         onDelete: 'CASCADE',
     })
     Likes: Likes[];
+
+    /*
+        user - article : Many To Many
+        (Likes)
+    */
+    @ManyToMany(() => Articles, (articles) => articles.LikesUsers)
+    @JoinTable({
+        name: 'Likes',
+        joinColumn: {
+            name: 'user_id',
+            referencedColumnName: 'userId',
+        },
+        inverseJoinColumn: {
+            name: 'article_id',
+            referencedColumnName: 'articleId',
+        },
+    })
+    LikesArticles: Articles[];
 }

@@ -21,8 +21,8 @@ export class Likes {
     userId: number;
 
     /*
-      article - user : Many To One
-  */
+        article - user : Many To One
+    */
     @ManyToOne(() => Users, (users) => users.Likes, {
         onDelete: 'CASCADE',
         nullable: false,
@@ -31,8 +31,8 @@ export class Likes {
     Users: Users;
 
     /*
-      article - category : Many To One
-      */
+        article - category : Many To One
+    */
     @ManyToOne(() => Articles, (articles) => articles.Likes, {
         onDelete: 'CASCADE',
         nullable: false,
