@@ -11,10 +11,17 @@ import { Categories } from 'src/entities/categories.entity';
 import { Comments } from 'src/entities/comments.entity';
 import { CacheService } from 'src/cache/cache.service';
 import { AuthService } from 'src/auth/auth.service';
+import { Likes } from 'src/entities/likes.entity';
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([Users, Comments, Articles, Categories]),
+        TypeOrmModule.forFeature([
+            Users,
+            Comments,
+            Articles,
+            Categories,
+            Likes,
+        ]),
         JwtModule.registerAsync({
             imports: [ConfigModule],
             useClass: JwtConfigService,
