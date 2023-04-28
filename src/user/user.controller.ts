@@ -85,17 +85,28 @@ export class UserController {
     }
 
     // 마이페이지 회원 정보 가져오기
+    @UseGuards(AuthGuard)
     @Get('/')
-    async getUser(@Param('userId') userId: number): Promise<Users> {
+    async getUser(@Req() req): Promise<Users> {
+        const { isLoggedIn, userId } = req.auth;
+
+        if (!isLoggedIn) {
+            throw new UnauthorizedException('로그인 중이 아닙니다.');
+        }
+
         return await this.userService.findUserByUserId(userId);
     }
 
-    @Patch('/:userId')
-    async updateUser(
-        @Param('userId') userId: number,
-        @Body() updateUserDto: UpdateUserDto,
-    ): Promise<{ message: string }> {
-        await this.userService.updateUser(userId, updateUserDto);
-        return { message: '수정 되었습니다.' };
+    // 마이페이지 회원 정보 수정
+    @UseGuards(AuthGuard)
+    @Patch('/')
+    async updateUser(@Body() userInfo: UpdateUserDto, @Req() req) {
+        const { isLoggedIn, userId } = req.auth;
+
+        if (!isLoggedIn) {
+            throw new UnauthorizedException('로그인 중이 아닙니다.');
+        }
+
+        return await this.userService.updateUserProfile(userId, userInfo);
     }
 }

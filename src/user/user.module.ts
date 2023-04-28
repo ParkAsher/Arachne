@@ -25,5 +25,6 @@ import { CacheModule } from 'src/cache/cache.module';
     ],
     controllers: [UserController],
     providers: [UserService],
+    exports: [UserService],
 })
 export class UserModule {}

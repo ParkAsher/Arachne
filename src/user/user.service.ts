@@ -1,8 +1,8 @@
 import {
+    ConflictException,
     HttpException,
     HttpStatus,
     Injectable,
-    NotFoundException,
     UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -33,10 +33,26 @@ export class UserService {
         }
     }
 
+    async findUserByUserId(userId: number): Promise<Users> {
+        const userInfo = await this.userRepository.findOne({
+            select: [
+                'id',
+                'name',
+                'email',
+                'nickname',
+                'phone',
+                'role',
+                'profileImg',
+            ],
+            where: { userId },
+        });
+
+        return userInfo;
+    }
+
     async findExistUser(column) {
         try {
-            return await this.userRepository.find({
-                select: ['id'],
+            return await this.userRepository.count({
                 where: { ...column },
             });
         } catch (error) {
@@ -54,9 +70,9 @@ export class UserService {
             ];
 
             for (let column of duplicatedCheckArray) {
-                const duplicatedUser = await this.findExistUser(column);
+                const count = await this.findExistUser(column);
 
-                if (duplicatedUser.length) {
+                if (count) {
                     throw new HttpException(
                         Object.keys(column)[0],
                         HttpStatus.CONFLICT,
@@ -128,27 +144,37 @@ export class UserService {
         );
     }
 
-    async findUserByUserId(userId: number): Promise<Users> {
-        const userInfo = await this.userRepository.findOne({
-            select: [
-                'id',
-                'name',
-                'email',
-                'nickname',
-                'phone',
-                'role',
-                'profileImg',
-            ],
-            where: { userId },
-        });
-
-        return userInfo;
+    // 회원 프로필 이미지 수정
+    async updateUserProfileImage(userId: number, profileImagePath: string) {
+        try {
+            this.userRepository.update(userId, {
+                profileImg: profileImagePath,
+            });
+        } catch (error) {
+            throw error;
+        }
     }
 
-    async updateUser(
-        userId: number,
-        updateUserDto: UpdateUserDto,
-    ): Promise<void> {
-        await this.userRepository.update(userId, { ...updateUserDto });
+    // 회원 정보 수정
+    async updateUserProfile(userId: number, userInfo: UpdateUserDto) {
+        try {
+            // 닉네임, 이메일 중복검사
+            const duplicatedCheckArray = [
+                { nickname: userInfo.nickname },
+                { email: userInfo.email },
+            ];
+
+            for (const column of duplicatedCheckArray) {
+                const count = await this.findExistUser(column);
+
+                if (count) {
+                    throw new ConflictException(Object.keys(column)[0]);
+                }
+            }
+
+            await this.userRepository.update(userId, { ...userInfo });
+        } catch (error) {
+            throw error;
+        }
     }
 }
