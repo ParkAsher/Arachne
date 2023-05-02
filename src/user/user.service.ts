@@ -96,7 +96,7 @@ export class UserService {
      */
     async withdraw(userId: number): Promise<void> {
         try {
-            await this.userRepository.softDelete(userId);
+            await this.userRepository.delete(userId);
         } catch (error) {
             throw error;
         }
