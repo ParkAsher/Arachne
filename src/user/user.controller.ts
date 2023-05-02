@@ -69,37 +69,6 @@ export class UserController {
         return await this.userService.signUpUser(userInfo);
     }
 
-    // 회원 탈퇴
-    @UseGuards(AuthGuard)
-    @Delete('/:userId')
-    async withdraw(
-        @Param('userId', ParseIntPipe) userId: number,
-        @Req() req,
-        @Res() res,
-    ) {
-        const { isLoggedIn, userInfo } = req.auth;
-        if (!isLoggedIn) {
-            throw new UnauthorizedException('로그인 중이 아닙니다.');
-        }
-
-        if (userInfo.role !== 1) {
-            if (userId !== req.auth.userInfo.userId) {
-                throw new UnauthorizedException('잘못된 접근입니다.');
-            }
-        }
-
-        await this.userService.withdraw(userId);
-
-        // Access Token, Refresh Token 다 지우기
-        res.clearCookie('accessToken');
-        res.clearCookie('refreshToken');
-
-        // Redis Refresh Token 지우기
-        await this.cacheService.removeRefreshToken(userId);
-
-        return res.send();
-    }
-
     // 로그인
     @Post('/signin')
     async signIn(@Body() userInfo: signinUserDto, @Res() res) {
@@ -113,6 +82,30 @@ export class UserController {
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
         });
+
+        return res.send();
+    }
+
+    // 회원 탈퇴
+    @UseGuards(AuthGuard)
+    @Delete('/withdraw')
+    async withdraw(@Req() req, @Res() res) {
+        const { isLoggedIn, userId } = req.auth;
+
+        // 이미 로그아웃 상태라면 불가능한 기능
+        if (!isLoggedIn) {
+            throw new UnauthorizedException('로그인 중이 아닙니다.');
+        }
+
+        // 회원 탈퇴
+        await this.userService.withdraw(userId);
+
+        // Access Token, Refresh Token 다 지우기
+        res.clearCookie('accessToken');
+        res.clearCookie('refreshToken');
+
+        // Redis Refresh Token 지우기
+        await this.cacheService.removeRefreshToken(userId);
 
         return res.send();
     }
