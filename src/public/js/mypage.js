@@ -151,3 +151,20 @@ function updateErrorRemove() {
         targetElements[0].parentNode.removeChild(targetElements[0]);
     }
 }
+
+// 회원 탈퇴
+async function withdrawUser() {
+    // 회원 탈퇴 확인
+    if (!confirm('정말로 탈퇴하시겠습니까?')) {
+        return;
+    }
+
+    try {
+        await axios.delete(`/api/users/withdraw`);
+
+        alert('정상적으로 탈퇴처리되었습니다.');
+        window.location.href = '/';
+    } catch (err) {
+        console.log(err);
+    }
+}
