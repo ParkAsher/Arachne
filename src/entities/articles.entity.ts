@@ -81,7 +81,7 @@ export class Articles {
     /*
         article - user : Many To Many
     */
-    @ManyToMany(() => Users, (users) => users.LikesArticles, {
+    @ManyToMany(() => Users, (users) => users.Likes, {
         onDelete: 'CASCADE',
     })
     LikesUsers: Users[];

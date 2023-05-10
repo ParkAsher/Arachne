@@ -80,17 +80,8 @@ export class Users {
         user - article : Many To Many
         (Likes)
     */
-    @ManyToMany(() => Articles, (articles) => articles.LikesUsers)
-    @JoinTable({
-        name: 'Likes',
-        joinColumn: {
-            name: 'user_id',
-            referencedColumnName: 'userId',
-        },
-        inverseJoinColumn: {
-            name: 'article_id',
-            referencedColumnName: 'articleId',
-        },
+    @ManyToMany(() => Articles, (articles) => articles.Likes, {
+        onDelete: 'CASCADE',
     })
     LikesArticles: Articles[];
 }
