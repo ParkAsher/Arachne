@@ -19,6 +19,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { Users } from 'src/entities/users.entity';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { CacheService } from 'src/cache/cache.service';
+import { updateUserPasswordDto } from './dto/update-user-password.dto';
 
 @Controller('/api/users')
 export class UserController {
@@ -134,5 +135,21 @@ export class UserController {
         }
 
         return await this.userService.updateUserProfile(userId, userInfo);
+    }
+
+    // 회원 비밀번호 변경
+    @UseGuards(AuthGuard)
+    @Patch('/password-change')
+    async updateUserPassword(
+        @Body() passwordInfo: updateUserPasswordDto,
+        @Req() req,
+    ) {
+        const { isLoggedIn, userId } = req.auth;
+
+        if (!isLoggedIn) {
+            throw new UnauthorizedException('로그인 중이 아닙니다.');
+        }
+
+        return await this.userService.updateUserPassword(userId, passwordInfo);
     }
 }

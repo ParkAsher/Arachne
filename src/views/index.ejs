@@ -16,11 +16,14 @@
         <link rel="stylesheet" href="/css/signup.css" />
         <link rel="stylesheet" href="/css/signin.css" />
         <link rel="stylesheet" href="/css/mypage.css" />
+        <link rel="stylesheet" href="/css/password-change.css" />
     </head>
     <body>
         <% if (component === 'main') { %> <%- include('main.ejs') %> <% } %> <%
         if (component === 'signup') { %> <%- include('signup.ejs') %> <% } %> <%
         if (component === 'signin') { %> <%- include('signin.ejs') %> <% } %> <%
-        if (component === 'mypage') { %> <%- include('mypage.ejs') %> <% } %>
+        if (component === 'mypage') { %> <%- include('mypage.ejs') %> <% } %> <%
+        if (component === 'passwordChange') { %> <%-
+        include('password-change.ejs') %> <% } %>
     </body>
 </html>
