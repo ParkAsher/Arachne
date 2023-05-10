@@ -50,6 +50,14 @@ export class UserService {
         return userInfo;
     }
 
+    // 비밀번호 가져오기
+    async findUserPasswordByUserId(userId: number): Promise<Users> {
+        return await this.userRepository.findOne({
+            select: ['password'],
+            where: { userId },
+        });
+    }
+
     async findExistUser(column) {
         try {
             return await this.userRepository.count({
@@ -185,6 +193,33 @@ export class UserService {
             }
 
             await this.userRepository.update(userId, { ...userInfo });
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    // 회원 비밀번호 변경
+    async updateUserPassword(userId: number, passwordInfo) {
+        const { currentPassword, newPassword } = passwordInfo;
+
+        const { password } = await this.findUserPasswordByUserId(userId);
+
+        // 현재 비밀번호, DB에 저장된 비밀번호 비교
+        const compare = await bcrypt.compare(currentPassword, password);
+
+        if (!compare) {
+            throw new UnauthorizedException(
+                '현재 비밀번호가 일치하지 않습니다.',
+            );
+        }
+
+        // 비밀번호 암호화
+        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+        try {
+            await this.userRepository.update(userId, {
+                password: hashedNewPassword,
+            });
         } catch (error) {
             throw error;
         }
