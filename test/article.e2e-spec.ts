@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { Repository } from 'typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
@@ -25,23 +25,18 @@ describe('ArticleController (e2e)', () => {
     let categoryRepository: Repository<Categories>;
     let likeRepository: Repository<Likes>;
 
-    const authGuardValue = (role: number) => ({
+    const authGuardValue = () => ({
         canActivate(context: ExecutionContext) {
             const request = context.switchToHttp().getRequest();
             request.auth = {
                 isLoggedIn: true,
-                userInfo: {
-                    nickname: 'testNick',
-                    profileImg: 'testImg',
-                    role: role,
-                    userId: UserDummy[0].userId,
-                },
+                userId: UserDummy[0].userId,
             };
             return true;
         },
     });
 
-    const initApp = async (role: number) => {
+    const initApp = async () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [
                 ConfigModule.forRoot({ isGlobal: true }),
@@ -56,7 +51,7 @@ describe('ArticleController (e2e)', () => {
             ],
         })
             .overrideGuard(AuthGuard)
-            .useValue(authGuardValue(role))
+            .useValue(authGuardValue())
             .compile();
 
         app = moduleFixture.createNestApplication();
@@ -75,7 +70,7 @@ describe('ArticleController (e2e)', () => {
     };
 
     beforeEach(async () => {
-        await initApp(1);
+        await initApp();
     });
 
     afterAll(async () => {

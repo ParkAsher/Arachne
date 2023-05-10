@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { UserModule } from 'src/user/user.module';
 import { Repository } from 'typeorm';
 import { Users } from 'src/entities/users.entity';
@@ -9,30 +9,24 @@ import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
 import { UserDummy } from './dummy/user.dummy';
 import { UpdateUserDto } from 'src/user/dto/update-user.dto';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
-import { RedisModule } from '@liaoliaots/nestjs-redis';
 
 describe('UserController (e2e)', () => {
     let app: INestApplication;
     let server: request.SuperTest<request.Test>;
     let userRepository: Repository<Users>;
 
-    const authGuardValue = (role: number) => ({
+    const authGuardValue = () => ({
         canActivate(context: ExecutionContext) {
             const request = context.switchToHttp().getRequest();
             request.auth = {
                 isLoggedIn: true,
-                userInfo: {
-                    nickname: 'testNick',
-                    profileImg: 'testImg',
-                    role: role,
-                    userId: UserDummy[0].userId,
-                },
+                userId: UserDummy[0].userId,
             };
             return true;
         },
     });
 
-    const initApp = async (role: number) => {
+    const initApp = async () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [
                 ConfigModule.forRoot({ isGlobal: true }),
@@ -43,17 +37,11 @@ describe('UserController (e2e)', () => {
                     synchronize: true,
                     logging: false,
                 }),
-                RedisModule.forRoot({
-                    config: {
-                        url: process.env.REDIS_URL,
-                        password: process.env.REDIS_PASSWORD,
-                    },
-                }),
                 UserModule,
             ],
         })
             .overrideGuard(AuthGuard)
-            .useValue(authGuardValue(role))
+            .useValue(authGuardValue())
             .compile();
 
         app = moduleFixture.createNestApplication();
@@ -61,22 +49,21 @@ describe('UserController (e2e)', () => {
         userRepository = moduleFixture.get(getRepositoryToken(Users));
 
         await userRepository.insert(UserDummy);
-
         await app.init();
     };
 
     beforeEach(async () => {
-        await initApp(1);
+        await initApp();
     });
 
     afterAll(async () => {
         await app.close();
     });
 
-    describe('/api/users/1 GET', () => {
+    describe('GET /api/users', () => {
         it('유저 상세정보 가져오기 ', async () => {
             // Given
-            const url = `/api/users/${UserDummy[0].userId}`;
+            const url = `/api/users`;
 
             // When
             const res = await server.get(url);
@@ -95,12 +82,13 @@ describe('UserController (e2e)', () => {
         });
     });
 
-    describe('/api/users/1 PATCH', () => {
-        it('유저 정보 수정하기 - 닉네임 ', async () => {
+    describe('PATCH /api/users', () => {
+        it('유저 정보 수정하기', async () => {
             // Given
-            const url = `/api/users/${UserDummy[0].userId}`;
+            const url = `/api/users`;
             const updateUserDto: UpdateUserDto = {
                 nickname: 'updateAdminNickname',
+                email: 'update-email@gmail.com',
             };
 
             // When
@@ -108,48 +96,16 @@ describe('UserController (e2e)', () => {
 
             // Then
             expect(res.status).toBe(200);
-            expect(res.body).toEqual({
-                message: '수정 되었습니다.',
-            });
         });
     });
 
-    describe('/api/users/1 DELETE', () => {
+    describe('DELETE /api/users/withdraw', () => {
         beforeEach(async () => {
-            await initApp(2);
+            await initApp();
         });
-        it('admin이 아니고 param, guard의 userId가 다를 경우', async () => {
+        it('유저 회원탈퇴', async () => {
             // Give
-            const url = `/api/users/${UserDummy[1].userId}`;
-
-            // When
-            const res = await server.delete(url);
-
-            // Then
-            expect(res.status).toBe(401);
-            expect(res.body.message).toBe('잘못된 접근입니다.');
-            expect(res.body.error).toBe('Unauthorized');
-        });
-
-        it('admin이 아니고 param, guard의 userId가 같을 경우', async () => {
-            // Give
-            const url = `/api/users/${UserDummy[0].userId}`;
-
-            // When
-            const res = await server.delete(url);
-
-            // Then
-            expect(res.status).toBe(200);
-        });
-    });
-
-    describe('/api/users/1 DELETE', () => {
-        beforeEach(async () => {
-            await initApp(1);
-        });
-        it('admin이고 param, guard의 userId가 다른 경우', async () => {
-            // Give
-            const url = `/api/users/${UserDummy[1].userId}`;
+            const url = '/api/users/withdraw';
 
             // When
             const res = await server.delete(url);
