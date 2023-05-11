@@ -32,15 +32,15 @@ export class AppController {
     }
 
     @Get('admin')
-    @Render('adminindex')
+    @Render('admin-index')
     admin() {
-        return { component: 'adminmain' };
+        return { component: 'adminMain' };
     }
 
     @Get('/admin/user')
-    @Render('adminindex')
-    adminuser() {
-        return { component: 'adminuser' };
+    @Render('admin-index')
+    adminUser() {
+        return { component: 'adminUser' };
     }
 
     @UseGuards(AuthGuard)
