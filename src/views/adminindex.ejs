@@ -12,13 +12,11 @@
         <!-- CSS -->
         <link rel="stylesheet" href="/css/reset.css" />
         <link rel="stylesheet" href="/css/common.css" />
-        <link rel="stylesheet" href="/css/header.css" />
-        <link rel="stylesheet" href="/css/signup.css" />
-        <link rel="stylesheet" href="/css/signin.css" />
+        <link rel="stylesheet" href="/css/adminheader.css" />
     </head>
     <body>
-        <% if (component === 'main') { %> <%- include('main.ejs') %> <% } %> <%
-        if (component === 'signup') { %> <%- include('signup.ejs') %> <% } %> <%
-        if (component === 'signin') { %> <%- include('signin.ejs') %> <% } %>
+        <% if (component === 'adminmain') { %> <%- include('adminmain.ejs') %>
+        <% } %> <% if (component === 'adminuser') { %> <%-
+        include('adminuser.ejs') %> <% } %>
     </body>
 </html>

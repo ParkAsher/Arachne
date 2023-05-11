@@ -23,9 +23,15 @@ export class AppController {
         return { component: 'signin' };
     }
 
-    @Get('backuser')
-    @Render('index')
-    backuser() {
-        return { component: 'backuser' };
+    @Get('admin')
+    @Render('adminindex')
+    admin() {
+        return { component: 'adminmain' };
+    }
+
+    @Get('/admin/user')
+    @Render('adminindex')
+    adminuser() {
+        return { component: 'adminuser' };
     }
 }
