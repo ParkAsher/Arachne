@@ -1,16 +1,13 @@
-import { IsEmail, IsString, MaxLength, MinLength } from 'class-validator';
+import { IsEmail, IsOptional, Matches } from 'class-validator';
 
 export class UpdateUserDto {
-    @IsString()
+    @IsOptional()
+    @Matches(/^[\u1100-\u11FF\u3130-\u318F\uAC00-\uD7AFa-z\d]{2,15}$/, {
+        message: 'nickname',
+    })
     nickname?: string;
 
-    @IsString()
-    profileImg?: string;
-
+    @IsOptional()
     @IsEmail({}, { message: 'email' })
     email?: string;
-
-    @MinLength(10, { message: 'phone' })
-    @MaxLength(11, { message: 'phone' })
-    phone?: string;
 }

@@ -1,8 +1,8 @@
 import {
+    ConflictException,
     HttpException,
     HttpStatus,
     Injectable,
-    NotFoundException,
     UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -14,6 +14,7 @@ import { signinUserDto } from './dto/signin-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CacheService } from 'src/cache/cache.service';
+import { BackUpdateUserDto } from './dto/back-update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -33,10 +34,34 @@ export class UserService {
         }
     }
 
+    async findUserByUserId(userId: number): Promise<Users> {
+        const userInfo = await this.userRepository.findOne({
+            select: [
+                'id',
+                'name',
+                'email',
+                'nickname',
+                'phone',
+                'role',
+                'profileImg',
+            ],
+            where: { userId },
+        });
+
+        return userInfo;
+    }
+
+    // 비밀번호 가져오기
+    async findUserPasswordByUserId(userId: number): Promise<Users> {
+        return await this.userRepository.findOne({
+            select: ['password'],
+            where: { userId },
+        });
+    }
+
     async findExistUser(column) {
         try {
-            return await this.userRepository.find({
-                select: ['id'],
+            return await this.userRepository.count({
                 where: { ...column },
             });
         } catch (error) {
@@ -54,9 +79,9 @@ export class UserService {
             ];
 
             for (let column of duplicatedCheckArray) {
-                const duplicatedUser = await this.findExistUser(column);
+                const count = await this.findExistUser(column);
 
-                if (duplicatedUser.length) {
+                if (count) {
                     throw new HttpException(
                         Object.keys(column)[0],
                         HttpStatus.CONFLICT,
@@ -80,7 +105,7 @@ export class UserService {
      */
     async withdraw(userId: number): Promise<void> {
         try {
-            await this.userRepository.softDelete(userId);
+            await this.userRepository.delete(userId);
         } catch (error) {
             throw error;
         }
@@ -140,48 +165,62 @@ export class UserService {
         );
     }
 
-    /** userId(Primary key)의 유저정보를 반환
-     * @param userId
-     * @returns ['id',
-                'name',
-                'email',
-                'nickname',
-                'phone',
-                'role',
-                'profileImg',]
-     */
-    async getUser(userId: number): Promise<Users> {
+    // 회원 프로필 이미지 수정
+    async updateUserProfileImage(userId: number, profileImagePath: string) {
         try {
-            const userInfo = await this.userRepository.findOne({
-                select: [
-                    'id',
-                    'name',
-                    'email',
-                    'nickname',
-                    'phone',
-                    'role',
-                    'profileImg',
-                ],
-                where: { userId },
+            this.userRepository.update(userId, {
+                profileImg: profileImagePath,
             });
-
-            return userInfo;
         } catch (error) {
             throw error;
         }
     }
 
-    /** userId(Primary key)를 가진 유저의 정보를 updateUserDto의 정보로 수정
-     * @param userId
-     * @param updateUserDto
-     * @returns void
-     */
-    async updateUser(
-        userId: number,
-        updateUserDto: UpdateUserDto,
-    ): Promise<void> {
+    // 회원 정보 수정
+    async updateUserProfile(userId: number, userInfo: UpdateUserDto) {
         try {
-            await this.userRepository.update(userId, { ...updateUserDto });
+            // 닉네임, 이메일 중복검사
+            const duplicatedCheckArray = [
+                { nickname: userInfo.nickname },
+                { email: userInfo.email },
+            ];
+
+            for (const column of duplicatedCheckArray) {
+                const count = await this.findExistUser(column);
+
+                if (count) {
+                    throw new ConflictException(Object.keys(column)[0]);
+                }
+            }
+
+            await this.userRepository.update(userId, { ...userInfo });
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    // 회원 비밀번호 변경
+    async updateUserPassword(userId: number, passwordInfo) {
+        const { currentPassword, newPassword } = passwordInfo;
+
+        const { password } = await this.findUserPasswordByUserId(userId);
+
+        // 현재 비밀번호, DB에 저장된 비밀번호 비교
+        const compare = await bcrypt.compare(currentPassword, password);
+
+        if (!compare) {
+            throw new UnauthorizedException(
+                '현재 비밀번호가 일치하지 않습니다.',
+            );
+        }
+
+        // 비밀번호 암호화
+        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+        try {
+            await this.userRepository.update(userId, {
+                password: hashedNewPassword,
+            });
         } catch (error) {
             throw error;
         }
@@ -212,5 +251,13 @@ export class UserService {
         } catch (error) {
             throw error;
         }
+    }
+
+    // 백오피스 - 유저 정보 수정
+    async updateUser(
+        userId: number,
+        backUpdateUserDto: BackUpdateUserDto,
+    ): Promise<void> {
+        await this.userRepository.update(userId, { ...backUpdateUserDto });
     }
 }
