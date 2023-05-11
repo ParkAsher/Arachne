@@ -135,11 +135,11 @@ export class UserController {
     }
 
     // 백오피스 - 회원 삭제
-    @Delete('/:userId')
+    @Delete('/:userIdList')
     async deleteUser(
-        @Param('userId') userId: number,
+        @Param('userIdList') userIdList: Array<number>,
     ): Promise<{ message: string }> {
-        await this.userService.deleteUser(userId);
+        await this.userService.deleteUser(userIdList);
         return { message: '회원이 삭제되었습니다.' };
     }
 

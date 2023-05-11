@@ -203,9 +203,12 @@ export class UserService {
     }
 
     // 백오피스 - 유저 삭제
-    async deleteUser(userId: number): Promise<void> {
+    async deleteUser(userIdList: Array<number>): Promise<void> {
         try {
-            await this.userRepository.delete(userId);
+            for (let i = 0; i < userIdList.length; i++) {
+                const userId = userIdList[i];
+                await this.userRepository.delete(userId);
+            }
         } catch (error) {
             throw error;
         }
