@@ -258,6 +258,19 @@ export class UserService {
         userId: number,
         backUpdateUserDto: BackUpdateUserDto,
     ): Promise<void> {
-        await this.userRepository.update(userId, { ...backUpdateUserDto });
+        try {
+            await this.userRepository.update(userId, { ...backUpdateUserDto });
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    // 백오피스 - 회원 가입 승인
+    async acceptUser(userId: number): Promise<void> {
+        try {
+            await this.userRepository.update(userId, { role: 2 });
+        } catch (error) {
+            throw error;
+        }
     }
 }

@@ -170,12 +170,21 @@ export class UserController {
     }
 
     // 백오피스 - 유저 정보 수정
-    @Patch('/back/:userId')
+    @Patch('/admin/:userId')
     async backUpdateUser(
         @Param('userId') userId: number,
         @Body() backUpdateUserDto: BackUpdateUserDto,
     ): Promise<{ message: string }> {
         await this.userService.updateUser(userId, backUpdateUserDto);
+        return { message: '수정 되었습니다.' };
+    }
+
+    // 백오피스 - 유저 가입 신청 허가
+    @Patch('/admin/accept/:userId')
+    async acceptUser(
+        @Param('userId') userId: number,
+    ): Promise<{ message: string }> {
+        await this.userService.acceptUser(userId);
         return { message: '수정 되었습니다.' };
     }
 }
