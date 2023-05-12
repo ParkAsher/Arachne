@@ -1,5 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
+import {
+    ExecutionContext,
+    INestApplication,
+    NotFoundException,
+} from '@nestjs/common';
 import request from 'supertest';
 import { UserModule } from 'src/user/user.module';
 import { Repository } from 'typeorm';
@@ -9,6 +13,7 @@ import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
 import { UserDummy } from './dummy/user.dummy';
 import { UpdateUserDto } from 'src/user/dto/update-user.dto';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { PasswordResetRequestDto } from 'src/user/dto/password-reset-request.dto';
 
 describe('UserController (e2e)', () => {
     let app: INestApplication;
@@ -100,9 +105,6 @@ describe('UserController (e2e)', () => {
     });
 
     describe('DELETE /api/users/withdraw', () => {
-        beforeEach(async () => {
-            await initApp();
-        });
         it('유저 회원탈퇴', async () => {
             // Give
             const url = '/api/users/withdraw';
@@ -112,6 +114,45 @@ describe('UserController (e2e)', () => {
 
             // Then
             expect(res.status).toBe(200);
+        });
+    });
+
+    describe('POST /api/users/password-reset-request', () => {
+        it('비밀번호 찾기 - 성공', async () => {
+            // Give
+            const url = '/api/users/password-reset-request';
+            const PasswordResetRequestDto: PasswordResetRequestDto = {
+                email: UserDummy[0].email,
+                id: UserDummy[0].id,
+                nickname: UserDummy[0].nickname,
+            };
+
+            // When
+            const res = await server.post(url).send(PasswordResetRequestDto);
+
+            // Then
+            expect(res.status).toBe(200);
+            expect(res.body).toEqual({
+                message: '유저 정보가 확인되었습니다.',
+            });
+        });
+
+        it('비밀번호 찾기 - 실패(입력정보 미일치)', async () => {
+            // Give
+            const url = '/api/users/password-reset-request';
+            const PasswordResetRequestDto: PasswordResetRequestDto = {
+                email: UserDummy[0].email,
+                id: UserDummy[1].id,
+                nickname: UserDummy[0].nickname,
+            };
+
+            // When
+            const res = await server.post(url).send(PasswordResetRequestDto);
+
+            // Then
+            expect(res.status).toBe(404);
+            expect(res.body.message).toEqual('유저 정보가 존재하지 않습니다.');
+            expect(res.body.error).toBe('Not Found');
         });
     });
 });
