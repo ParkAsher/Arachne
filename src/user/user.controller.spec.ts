@@ -8,6 +8,7 @@ import { UserDummy } from '../../test/dummy/user.dummy';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { UnauthorizedException } from '@nestjs/common';
 import { CacheService } from 'src/cache/cache.service';
+import { PasswordResetRequestDto } from './dto/password-reset-request.dto';
 
 describe('UserController', () => {
     let userController: UserController;
@@ -17,6 +18,7 @@ describe('UserController', () => {
         signUpUser: jest.fn(),
         updateUserProfile: jest.fn(),
         withdraw: jest.fn(),
+        checkUserForFindPassword: jest.fn(),
     };
 
     const mockUserCacheService = { removeRefreshToken: jest.fn() };
@@ -155,6 +157,30 @@ describe('UserController', () => {
                 expect(error.message).toEqual('로그인 중이 아닙니다.');
                 expect(error).toBeInstanceOf(UnauthorizedException);
             }
+        });
+    });
+
+    describe('비밀번호 찾기', () => {
+        it('user.service.checkUserForFindPassword 호출 제대로 하는지', async () => {
+            // Given
+            const resetPasswordRequestDto: PasswordResetRequestDto = {
+                email: UserDummy[0].email,
+                id: UserDummy[0].id,
+                nickname: UserDummy[0].nickname,
+            };
+
+            // When
+            await userController.checkUserForFindPassword(
+                resetPasswordRequestDto,
+            );
+
+            // Then
+            expect(
+                mockUserService.checkUserForFindPassword,
+            ).toHaveBeenCalledTimes(1);
+            expect(
+                mockUserService.checkUserForFindPassword,
+            ).toHaveBeenCalledWith(resetPasswordRequestDto);
         });
     });
 });

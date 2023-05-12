@@ -7,6 +7,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDummy } from '../../test/dummy/user.dummy';
 import { CacheService } from 'src/cache/cache.service';
 import { JwtService } from '@nestjs/jwt';
+import { PasswordResetRequestDto } from './dto/password-reset-request.dto';
 
 describe('UserService', () => {
     let userService: UserService;
@@ -37,6 +38,10 @@ describe('UserService', () => {
             .compile();
 
         userService = module.get<UserService>(UserService);
+    });
+
+    afterEach(async () => {
+        jest.clearAllMocks();
     });
 
     describe('유저 상세정보 가져오기', () => {
@@ -95,6 +100,31 @@ describe('UserService', () => {
             // Then
             expect(mockUserRepository.delete).toHaveBeenCalledTimes(1);
             expect(mockUserRepository.delete).toHaveBeenCalledWith(userId);
+        });
+    });
+
+    describe('비밀번호 찾기', () => {
+        it('user.repository.findOne 호출 제대로 하는지', async () => {
+            // Given
+            const PasswordResetRequestDto: PasswordResetRequestDto = {
+                email: UserDummy[0].email,
+                id: UserDummy[0].id,
+                nickname: UserDummy[0].nickname,
+            };
+
+            // When
+            await userService.checkUserForFindPassword(PasswordResetRequestDto);
+
+            // Then
+            expect(mockUserRepository.findOne).toHaveBeenCalledTimes(1);
+            expect(mockUserRepository.findOne).toHaveBeenCalledWith({
+                select: ['id'],
+                where: {
+                    email: PasswordResetRequestDto.email,
+                    id: PasswordResetRequestDto.id,
+                    nickname: PasswordResetRequestDto.nickname,
+                },
+            });
         });
     });
 });
