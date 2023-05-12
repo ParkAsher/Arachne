@@ -155,13 +155,13 @@ export class UserController {
     }
 
     // 모든 회원 정보 불러오기
-    @Get('/')
+    @Get('/admin')
     async getAllUser(): Promise<Users[]> {
         return await this.userService.getAllUser();
     }
 
     // 백오피스 - 회원 삭제
-    @Delete('/:userIdList')
+    @Delete('/admin/:userIdList')
     async deleteUser(
         @Param('userIdList') userIdList: Array<number>,
     ): Promise<{ message: string }> {
