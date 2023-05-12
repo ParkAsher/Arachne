@@ -14,7 +14,8 @@ describe('UserService', () => {
     const mockUserRepository = {
         findOne: jest.fn(),
         update: jest.fn(),
-        softDelete: jest.fn(),
+        delete: jest.fn(),
+        count: jest.fn(),
     };
 
     const mockUserCacheService = {};
@@ -39,12 +40,12 @@ describe('UserService', () => {
     });
 
     describe('유저 상세정보 가져오기', () => {
-        it('repository로 인자 전달 제대로 하는지', () => {
+        it('user.repository.update 호출 제대로 하는지', async () => {
             // Givne
-            const userId: number = 1;
+            const userId: number = UserDummy[0].userId;
 
             // When
-            userService.getUser(userId);
+            await userService.findUserByUserId(userId);
 
             // Then
             expect(mockUserRepository.findOne).toHaveBeenCalledTimes(1);
@@ -64,30 +65,27 @@ describe('UserService', () => {
     });
 
     describe('유저 정보 업데이트', () => {
-        it('repository로 인자 전달 제대로 하는지', () => {
+        it('user.repository.update 호출 제대로 하는지', async () => {
             // Given
-            const updateUserDto: UpdateUserDto = {
+            const userInfo: UpdateUserDto = {
                 nickname: 'updateNickname',
-                profileImg: 'updateImg',
                 email: 'updateEmail@email.com',
-                phone: '01099999999',
             };
             const userId = UserDummy[0].userId;
 
             // When
-            userService.updateUser(userId, updateUserDto);
+            await userService.updateUserProfile(userId, userInfo);
 
             // Then
             expect(mockUserRepository.update).toHaveBeenCalledTimes(1);
-            expect(mockUserRepository.update).toHaveBeenCalledWith(
-                userId,
-                updateUserDto,
-            );
+            expect(mockUserRepository.update).toHaveBeenCalledWith(userId, {
+                ...userInfo,
+            });
         });
     });
 
     describe('회원 탈퇴', () => {
-        it('repository로 인자 전달 제대로 하는지', async () => {
+        it('user.repository.signUpUser 호출 제대로 하는지', async () => {
             // Given
             const userId: number = UserDummy[0].userId;
 
@@ -95,8 +93,8 @@ describe('UserService', () => {
             await userService.withdraw(userId);
 
             // Then
-            expect(mockUserRepository.softDelete).toHaveBeenCalledTimes(1);
-            expect(mockUserRepository.softDelete).toHaveBeenCalledWith(userId);
+            expect(mockUserRepository.delete).toHaveBeenCalledTimes(1);
+            expect(mockUserRepository.delete).toHaveBeenCalledWith(userId);
         });
     });
 });
