@@ -45,6 +45,12 @@ export class AppController {
         return { component: 'mypage' };
     }
 
+    @Get('password-find')
+    @Render('index')
+    passwordFind() {
+        return { component: 'passwordFind' };
+    }
+
     @UseGuards(AuthGuard)
     @Get('password-change')
     @Render('index')
