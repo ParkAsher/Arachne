@@ -37,15 +37,15 @@ export class Comments {
     @Column({ type: 'text', nullable: false })
     comment: string;
 
-    @Column({ type: 'int', nullable: true })
+    @Column({ type: 'int', nullable: true, name: 'original_comment_id' })
     originalCommentId: number;
 
-    @CreateDateColumn({ nullable: true })
+    @CreateDateColumn({ nullable: true, name: 'created_at' })
     readonly createdAt: Date;
 
-    @UpdateDateColumn({ nullable: true })
+    @UpdateDateColumn({ nullable: true, name: 'updated_at' })
     readonly updatedAt: Date;
 
-    @DeleteDateColumn({ nullable: true, default: null })
+    @DeleteDateColumn({ nullable: true, default: null, name: 'deleted_at' })
     readonly deletedAt: Date | null;
 }
