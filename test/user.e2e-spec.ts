@@ -124,7 +124,7 @@ describe('UserController (e2e)', () => {
             const PasswordResetRequestDto: PasswordResetRequestDto = {
                 email: UserDummy[0].email,
                 id: UserDummy[0].id,
-                nickname: UserDummy[0].nickname,
+                name: UserDummy[0].name,
             };
 
             // When
@@ -143,7 +143,7 @@ describe('UserController (e2e)', () => {
             const PasswordResetRequestDto: PasswordResetRequestDto = {
                 email: UserDummy[0].email,
                 id: UserDummy[1].id,
-                nickname: UserDummy[0].nickname,
+                name: UserDummy[0].name,
             };
 
             // When
