@@ -4,8 +4,6 @@ import {
     Delete,
     Get,
     HttpCode,
-    Param,
-    ParseIntPipe,
     Patch,
     Post,
     Req,
@@ -164,7 +162,7 @@ export class UserController {
         const res = await this.userService.checkUserForFindPassword(
             resetPasswordRequestDto,
         );
-        console.log(res);
+
         return res;
     }
 }
