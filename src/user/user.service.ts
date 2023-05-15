@@ -231,11 +231,11 @@ export class UserService {
     async checkUserForFindPassword(
         resetPasswordRequestDto: PasswordResetRequestDto,
     ) {
-        const { email, id, nickname } = resetPasswordRequestDto;
+        const { email, id, name } = resetPasswordRequestDto;
 
         const user = await this.userRepository.findOne({
             select: ['id'],
-            where: { email, id, nickname },
+            where: { email, id, name },
         });
 
         if (!user) {

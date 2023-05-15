@@ -2,10 +2,10 @@ import { IsEmail, IsNotEmpty, Matches } from 'class-validator';
 
 export class PasswordResetRequestDto {
     @IsNotEmpty()
-    @Matches(/^[\u1100-\u11FF\u3130-\u318F\uAC00-\uD7AFa-z\d]{2,15}$/, {
-        message: 'nickname',
+    @Matches(/^[\u1100-\u11FF\u3130-\u318F\uAC00-\uD7AF]{2,20}$/, {
+        message: 'name',
     })
-    nickname?: string;
+    name: string;
 
     @IsNotEmpty()
     @IsEmail({}, { message: 'email' })
