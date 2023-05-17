@@ -22,4 +22,8 @@ export class CacheService {
     async removeRefreshToken(userId: number) {
         await this.redis.del(`refreshToken-${userId}`);
     }
+
+    async setAuthCode(email: string, authCode: string): Promise<void> {
+        await this.redis.set(email, authCode, 'EX', 180);
+    }
 }

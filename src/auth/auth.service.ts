@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CacheService } from 'src/cache/cache.service';
 import { Users } from 'src/entities/users.entity';
+import { MailService } from 'src/mail/mail.service';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -11,6 +12,7 @@ export class AuthService {
         @InjectRepository(Users) private userRepository: Repository<Users>,
         private jwtService: JwtService,
         private cacheService: CacheService,
+        private readonly mailService: MailService,
     ) {}
 
     // Token 검증
@@ -31,4 +33,12 @@ export class AuthService {
             expiresIn: '1m',
         });
     }
+
+    async sendAuthCode(email: string) {
+        const authCode = await this.mailService.sendAuthCode(email);
+
+        await this.cacheService.setAuthCode(email, authCode);
+    }
+
+    async checkAuthCode(email: string) {}
 }
