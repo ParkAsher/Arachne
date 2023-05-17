@@ -106,23 +106,23 @@ describe('UserService', () => {
     describe('비밀번호 찾기', () => {
         it('user.repository.findOne 호출 제대로 하는지', async () => {
             // Given
-            const PasswordResetRequestDto: PasswordResetRequestDto = {
+            const passwordResetRequestDto: PasswordResetRequestDto = {
                 email: UserDummy[0].email,
                 id: UserDummy[0].id,
-                nickname: UserDummy[0].nickname,
+                name: UserDummy[0].name,
             };
 
             // When
-            await userService.checkUserForFindPassword(PasswordResetRequestDto);
+            await userService.checkUserForFindPassword(passwordResetRequestDto);
 
             // Then
             expect(mockUserRepository.findOne).toHaveBeenCalledTimes(1);
             expect(mockUserRepository.findOne).toHaveBeenCalledWith({
                 select: ['id'],
                 where: {
-                    email: PasswordResetRequestDto.email,
-                    id: PasswordResetRequestDto.id,
-                    nickname: PasswordResetRequestDto.nickname,
+                    email: passwordResetRequestDto.email,
+                    id: passwordResetRequestDto.id,
+                    name: passwordResetRequestDto.name,
                 },
             });
         });

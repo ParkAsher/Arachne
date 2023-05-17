@@ -1,9 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-    ExecutionContext,
-    INestApplication,
-    NotFoundException,
-} from '@nestjs/common';
+import { ExecutionContext, INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { UserModule } from 'src/user/user.module';
 import { Repository } from 'typeorm';

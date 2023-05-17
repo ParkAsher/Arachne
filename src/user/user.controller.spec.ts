@@ -163,15 +163,15 @@ describe('UserController', () => {
     describe('비밀번호 찾기', () => {
         it('user.service.checkUserForFindPassword 호출 제대로 하는지', async () => {
             // Given
-            const resetPasswordRequestDto: PasswordResetRequestDto = {
+            const passwordResetRequestDto: PasswordResetRequestDto = {
                 email: UserDummy[0].email,
                 id: UserDummy[0].id,
-                nickname: UserDummy[0].nickname,
+                name: UserDummy[0].name,
             };
 
             // When
             await userController.checkUserForFindPassword(
-                resetPasswordRequestDto,
+                passwordResetRequestDto,
             );
 
             // Then
@@ -180,7 +180,7 @@ describe('UserController', () => {
             ).toHaveBeenCalledTimes(1);
             expect(
                 mockUserService.checkUserForFindPassword,
-            ).toHaveBeenCalledWith(resetPasswordRequestDto);
+            ).toHaveBeenCalledWith(passwordResetRequestDto);
         });
     });
 });
