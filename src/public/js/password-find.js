@@ -51,19 +51,28 @@ async function checkUserForFindPassword() {
 }
 
 // 인증과정을 진행하는 함수
-function emailAuthenticationCode(email) {
+async function emailAuthenticationCode(email) {
     const authBtn = document.getElementById('auth-code-action-btn');
     authBtn.textContent = '인증 확인';
     // 인증 확인 API호출
-    authBtn.onclick = verifyAuthenticationCode;
+    authBtn.onclick = () => verifyAuthenticationCode(email);
+
+    const body = {
+        email,
+    };
 
     try {
-        // 인증메일 보내는 API 호출
-        alert('인증메일 보내는 API 호출');
-
         // 인증번호 인풋 생성
         createAuthInput();
-    } catch (err) {}
+
+        const result = await axios.post('/api/auth/send-auth-code', body);
+        // 인증메일 보내는 API 호출
+        alert('인증메일 보내는 API 호출');
+        console.log(result);
+    } catch (err) {
+        console.log(err);
+        alert(err);
+    }
 }
 
 // element의 데이터가 유효한지 확인하는 기능
