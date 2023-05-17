@@ -6,6 +6,8 @@ import { JwtConfigService } from 'src/config/jwt.config.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Users } from 'src/entities/users.entity';
 import { CacheModule } from 'src/cache/cache.module';
+import { AuthController } from './auth.controller';
+import { MailModule } from 'src/mail/mail.module';
 
 @Module({
     imports: [
@@ -16,7 +18,9 @@ import { CacheModule } from 'src/cache/cache.module';
         }),
         TypeOrmModule.forFeature([Users]),
         CacheModule,
+        MailModule,
     ],
+    controllers: [AuthController],
     providers: [AuthService],
     exports: [AuthService],
 })
