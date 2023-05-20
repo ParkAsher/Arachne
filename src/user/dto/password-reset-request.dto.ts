@@ -9,7 +9,7 @@ export class PasswordResetRequestDto {
 
     @IsNotEmpty()
     @IsEmail({}, { message: 'email' })
-    email?: string;
+    email: string;
 
     @IsNotEmpty()
     @Matches(/^(?=.*[a-z])(?=.*\d)[a-z\d]{5,15}$/, {

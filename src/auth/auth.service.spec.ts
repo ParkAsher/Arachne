@@ -6,12 +6,16 @@ import { JwtService } from '@nestjs/jwt';
 import { CacheService } from 'src/cache/cache.service';
 import { MailService } from 'src/mail/mail.service';
 import { UserDummy } from '../../test/dummy/user.dummy';
+import { CheckAuthCodeDto } from './dto/check-auth-code.dto';
 
 describe('AuthService', () => {
     let authService: AuthService;
 
     const mockUserRepository = {};
-    const mockCacheService = { setAuthCode: jest.fn() };
+    const mockCacheService = {
+        setAuthCode: jest.fn(),
+        removeAuthCode: jest.fn(),
+    };
     const mockMailService = { sendAuthCode: jest.fn() };
 
     beforeEach(async () => {
@@ -54,6 +58,25 @@ describe('AuthService', () => {
             expect(mockCacheService.setAuthCode).toHaveBeenCalledWith(
                 email,
                 authCode,
+            );
+        });
+    });
+
+    describe('비밀번호 찾기 - 인증번호 확인', () => {
+        it('cacheService.removeAuthCode 호출 제대로 하는지', async () => {
+            // Given
+            const checkAuthCodeDto: CheckAuthCodeDto = {
+                email: UserDummy[0].email,
+                authCode: 123213,
+            };
+
+            // When
+            authService.checkAuthCode(checkAuthCodeDto);
+
+            // Then
+            expect(mockCacheService.removeAuthCode).toHaveBeenCalledTimes(1);
+            expect(mockCacheService.removeAuthCode).toHaveBeenCalledWith(
+                checkAuthCodeDto,
             );
         });
     });
