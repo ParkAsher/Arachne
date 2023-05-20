@@ -16,6 +16,7 @@ async function checkUserForFindPassword() {
         return;
     }
 
+    // http message body
     const body = {
         id: id.value.trim(),
         name: name.value.trim(),
@@ -23,6 +24,7 @@ async function checkUserForFindPassword() {
     };
 
     try {
+        // body정보와 일치하는 유저가 있는지 체크하는 API 호출
         const response = await axios.post(
             '/api/users/password-reset-request',
             body,
@@ -33,6 +35,7 @@ async function checkUserForFindPassword() {
             emailAuthenticationCode(email.value.trim());
         }
     } catch (err) {
+        // body데이터유형이 정확하지만 일치하는 유저가 없을 경우
         if (err.response.status === 404) {
             alert(err.response.data.message);
             return window.location.reload();
@@ -65,13 +68,12 @@ async function emailAuthenticationCode(email) {
         // 인증번호 인풋 생성
         createAuthInput();
 
-        const result = await axios.post('/api/auth/send-auth-code', body);
         // 인증메일 보내는 API 호출
-        alert('인증메일 보내는 API 호출');
-        console.log(result);
+        await axios.post('/api/auth/send-auth-code', body);
+        alert('인증메일을 보냈습니다.');
     } catch (err) {
         console.log(err);
-        alert(err);
+        alert('인증메일 보내기 실패!');
     }
 }
 
@@ -111,20 +113,27 @@ function dataValidErrorPrint(element) {
     element.parentNode.insertBefore(newSpanElement, element.nextSibling);
 }
 
-function verifyAuthenticationCode() {
+async function verifyAuthenticationCode(email) {
     const authCodeInput = document.getElementById('auth-code');
+
+    const body = {
+        email,
+        authCode: window.parseInt(authCodeInput.value.trim(), 10),
+    };
 
     try {
         // 인증번호 확인 API 호출
-        alert(`인증번호 확인 API 호출 ${authCodeInput.value.trim()}전달`);
+        const result = await axios.post('/api/auth/check-auth-code', body);
+        alert(`인증번호 확인 API 호출`);
 
-        // 인증 성공시 - 재설정페이지
-        // window.location.href = '/password-reset';
-        alert('인증 성공! 재설정 페이지로 이동');
+        if (result?.data) {
+            // 인증 성공시 - 재설정페이지
+            // window.location.href = '/password-reset';
+            alert('인증 성공! 재설정 페이지로 이동!');
+        }
     } catch (error) {
         // 인증 실패 시 - 인증 실패 메세지
-        // alert(err.response.data.message);
-        alert('인증 실패! 에러메세지 출력');
+        alert(err.response.data.message);
     }
 }
 
