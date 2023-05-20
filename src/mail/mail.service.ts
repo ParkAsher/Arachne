@@ -5,7 +5,7 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 export class MailService {
     constructor(private readonly mailerService: MailerService) {}
 
-    async sendAuthCode(email: string): Promise<string> {
+    async sendAuthCode(email: string): Promise<number> {
         const randomCode = Math.random().toString().split('.')[1];
         const authCode = randomCode.substring(0, 6);
 
@@ -34,8 +34,9 @@ export class MailService {
                 </div>`,
             });
 
-            return authCode;
+            return parseInt(authCode, 10);
         } catch (err) {
+            console.log(err);
             throw new InternalServerErrorException(err);
         }
     }

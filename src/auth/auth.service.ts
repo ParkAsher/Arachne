@@ -5,6 +5,7 @@ import { CacheService } from 'src/cache/cache.service';
 import { Users } from 'src/entities/users.entity';
 import { MailService } from 'src/mail/mail.service';
 import { Repository } from 'typeorm';
+import { CheckAuthCodeDto } from './dto/check-auth-code.dto';
 
 @Injectable()
 export class AuthService {
@@ -34,11 +35,15 @@ export class AuthService {
         });
     }
 
+    // 인증메일 보내기
     async sendAuthCode(email: string) {
-        const authCode = await this.mailService.sendAuthCode(email);
+        const authCode: number = await this.mailService.sendAuthCode(email);
 
         await this.cacheService.setAuthCode(email, authCode);
     }
 
-    async checkAuthCode(email: string) {}
+    // 인증번호 확인
+    async checkAuthCode(checkAuthCodeDto: CheckAuthCodeDto): Promise<boolean> {
+        return await this.cacheService.removeAuthCode(checkAuthCodeDto);
+    }
 }
