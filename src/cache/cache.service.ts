@@ -1,5 +1,5 @@
 import { InjectRedis } from '@liaoliaots/nestjs-redis';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Redis } from 'ioredis';
 import { CheckAuthCodeDto } from 'src/auth/dto/check-auth-code.dto';
 
@@ -32,30 +32,21 @@ export class CacheService {
         email,
         authCode,
     }: CheckAuthCodeDto): Promise<boolean> {
-        const getAuthCode: string | false = await this.getValueByKeyInRedis(
-            email,
-        );
+        try {
+            await this.redis.del(email);
 
-        if (!getAuthCode) {
-            throw new UnauthorizedException('3분이 지났습니다!');
+            return true;
+        } catch (err) {
+            throw new Error(err);
         }
-
-        const isAuthentication: boolean =
-            authCode === parseInt(getAuthCode, 10);
-
-        if (!isAuthentication) {
-            throw new UnauthorizedException('인증코드가 틀립니다!');
-        }
-
-        this.redis.del(email);
-        return true;
     }
 
-    private async getValueByKeyInRedis(key: string): Promise<string | false> {
+    async getValueByKeyInRedis(key: string): Promise<string | false> {
         const value = await this.redis.get(key);
         if (!value) {
             return false;
         }
+
         return value;
     }
 }

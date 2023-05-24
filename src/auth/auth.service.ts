@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CacheService } from 'src/cache/cache.service';
@@ -44,6 +44,22 @@ export class AuthService {
 
     // 인증번호 확인
     async checkAuthCode(checkAuthCodeDto: CheckAuthCodeDto): Promise<boolean> {
+        const getAuthCode: string | false =
+            await this.cacheService.getValueByKeyInRedis(
+                checkAuthCodeDto.email,
+            );
+
+        if (!getAuthCode) {
+            throw new UnauthorizedException('3분이 지났습니다!');
+        }
+
+        const isAuthentication: boolean =
+            checkAuthCodeDto.authCode === parseInt(getAuthCode, 10);
+
+        if (!isAuthentication) {
+            throw new UnauthorizedException('인증코드가 틀립니다!');
+        }
+
         return await this.cacheService.removeAuthCode(checkAuthCodeDto);
     }
 }
