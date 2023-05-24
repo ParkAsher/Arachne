@@ -78,6 +78,8 @@ describe('UserService', () => {
             };
             const userId = UserDummy[0].userId;
 
+            mockUserRepository.findOne.mockResolvedValue(UserDummy[0].id);
+
             // When
             await userService.updateUserProfile(userId, userInfo);
 

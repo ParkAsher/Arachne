@@ -7,6 +7,7 @@ import { CacheService } from 'src/cache/cache.service';
 import { MailService } from 'src/mail/mail.service';
 import { UserDummy } from '../../test/dummy/user.dummy';
 import { CheckAuthCodeDto } from './dto/check-auth-code.dto';
+import { UnauthorizedException } from '@nestjs/common';
 
 describe('AuthService', () => {
     let authService: AuthService;
@@ -14,6 +15,7 @@ describe('AuthService', () => {
     const mockUserRepository = {};
     const mockCacheService = {
         setAuthCode: jest.fn(),
+        getValueByKeyInRedis: jest.fn(),
         removeAuthCode: jest.fn(),
     };
     const mockMailService = { sendAuthCode: jest.fn() };
@@ -40,11 +42,14 @@ describe('AuthService', () => {
         authService = module.get<AuthService>(AuthService);
     });
 
+    afterEach(async () => {
+        await jest.clearAllMocks();
+    });
     describe('비밀번호 찾기 - 인증메일 보내기', () => {
         it('auth.service.sendAuthCode 제대로 작동 하는지', async () => {
             // Given
             const email = UserDummy[0].email;
-            const authCode = '123123';
+            const authCode = 123123;
             mockMailService.sendAuthCode.mockReturnValue(authCode);
 
             // When
@@ -63,21 +68,70 @@ describe('AuthService', () => {
     });
 
     describe('비밀번호 찾기 - 인증번호 확인', () => {
-        it('cacheService.removeAuthCode 호출 제대로 하는지', async () => {
+        it('cacheService.removeAuthCode - 성공', async () => {
             // Given
             const checkAuthCodeDto: CheckAuthCodeDto = {
                 email: UserDummy[0].email,
                 authCode: 123213,
             };
 
+            mockCacheService.getValueByKeyInRedis.mockResolvedValue(
+                checkAuthCodeDto.authCode,
+            );
+
             // When
-            authService.checkAuthCode(checkAuthCodeDto);
+            await authService.checkAuthCode(checkAuthCodeDto);
 
             // Then
+            expect(mockCacheService.getValueByKeyInRedis).toHaveBeenCalledTimes(
+                1,
+            );
+            expect(mockCacheService.getValueByKeyInRedis).toHaveBeenCalledWith(
+                checkAuthCodeDto.email,
+            );
+
             expect(mockCacheService.removeAuthCode).toHaveBeenCalledTimes(1);
             expect(mockCacheService.removeAuthCode).toHaveBeenCalledWith(
                 checkAuthCodeDto,
             );
+        });
+
+        it('cacheService.removeAuthCode - 실패(레디스에 정보가 없을 때 | 입력시간이 3분이 지났을 때) ', async () => {
+            // Given
+            const checkAuthCodeDto: CheckAuthCodeDto = {
+                email: UserDummy[0].email,
+                authCode: 123213,
+            };
+
+            mockCacheService.getValueByKeyInRedis.mockResolvedValue(undefined);
+
+            // When
+            try {
+                await authService.checkAuthCode(checkAuthCodeDto);
+            } catch (err) {
+                // Then
+                expect(err.message).toEqual('3분이 지났습니다!');
+                expect(err).toBeInstanceOf(UnauthorizedException);
+            }
+        });
+
+        it('cacheService.removeAuthCode - 실패(이메일은 맞지만 인증번호가 틀렸을 때) ', async () => {
+            // Given
+            const checkAuthCodeDto: CheckAuthCodeDto = {
+                email: UserDummy[0].email,
+                authCode: 111111,
+            };
+
+            mockCacheService.getValueByKeyInRedis.mockResolvedValue(123123);
+
+            // When
+            try {
+                await authService.checkAuthCode(checkAuthCodeDto);
+            } catch (err) {
+                // Then
+                expect(err.message).toEqual('인증코드가 틀립니다!');
+                expect(err).toBeInstanceOf(UnauthorizedException);
+            }
         });
     });
 });
