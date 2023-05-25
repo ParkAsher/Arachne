@@ -12,6 +12,7 @@ import { Comments } from 'src/entities/comments.entity';
 import { Likes } from 'src/entities/likes.entity';
 import { AuthModule } from 'src/auth/auth.module';
 import { CacheModule } from 'src/cache/cache.module';
+import { MailModule } from 'src/mail/mail.module';
 
 @Module({
     imports: [
@@ -29,6 +30,7 @@ import { CacheModule } from 'src/cache/cache.module';
         }),
         AuthModule,
         CacheModule,
+        MailModule,
     ],
     controllers: [UserController],
     providers: [UserService],

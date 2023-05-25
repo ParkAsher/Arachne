@@ -3,6 +3,7 @@ import {
     HttpException,
     HttpStatus,
     Injectable,
+    NotFoundException,
     UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -14,6 +15,7 @@ import { signinUserDto } from './dto/signin-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CacheService } from 'src/cache/cache.service';
+import { PasswordResetRequestDto } from './dto/password-reset-request.dto';
 
 @Injectable()
 export class UserService {
@@ -223,5 +225,23 @@ export class UserService {
         } catch (error) {
             throw error;
         }
+    }
+
+    // 비밀번호 찾기 - payload와 일치하는 유저가 있는지 체크
+    async checkUserForFindPassword(
+        resetPasswordRequestDto: PasswordResetRequestDto,
+    ) {
+        const { email, id, name } = resetPasswordRequestDto;
+
+        const user = await this.userRepository.findOne({
+            select: ['id'],
+            where: { email, id, name },
+        });
+
+        if (!user) {
+            throw new NotFoundException('유저 정보가 존재하지 않습니다.');
+        }
+
+        return { message: '유저 정보가 확인되었습니다.' };
     }
 }

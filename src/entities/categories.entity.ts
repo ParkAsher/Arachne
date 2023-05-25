@@ -21,13 +21,13 @@ export class Categories {
     @Column({ type: 'varchar', nullable: false })
     name: string;
 
-    @CreateDateColumn({ nullable: true })
+    @CreateDateColumn({ nullable: true, name: 'created_at' })
     readonly createdAt: Date;
 
-    @UpdateDateColumn({ nullable: true })
+    @UpdateDateColumn({ nullable: true, name: 'updated_at' })
     readonly updatedAt: Date;
 
-    @DeleteDateColumn({ nullable: true, default: null })
+    @DeleteDateColumn({ nullable: true, default: null, name: 'deleted_at' })
     readonly deletedAt: Date | null;
 
     /*

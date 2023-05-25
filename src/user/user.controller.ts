@@ -3,8 +3,7 @@ import {
     Controller,
     Delete,
     Get,
-    Param,
-    ParseIntPipe,
+    HttpCode,
     Patch,
     Post,
     Req,
@@ -20,6 +19,7 @@ import { Users } from 'src/entities/users.entity';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { CacheService } from 'src/cache/cache.service';
 import { updateUserPasswordDto } from './dto/update-user-password.dto';
+import { PasswordResetRequestDto } from './dto/password-reset-request.dto';
 
 @Controller('/api/users')
 export class UserController {
@@ -151,5 +151,18 @@ export class UserController {
         }
 
         return await this.userService.updateUserPassword(userId, passwordInfo);
+    }
+
+    // 비밀번호 찾기 - payload와 일치하는 유저가 있는지 체크
+    @Post('/password-reset-request')
+    @HttpCode(200)
+    async checkUserForFindPassword(
+        @Body() resetPasswordRequestDto: PasswordResetRequestDto,
+    ) {
+        const res = await this.userService.checkUserForFindPassword(
+            resetPasswordRequestDto,
+        );
+
+        return res;
     }
 }
