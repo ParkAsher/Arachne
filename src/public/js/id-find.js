@@ -1,4 +1,4 @@
-async function checkUserForFindId() {
+function checkUserForFindId() {
     const name = document.getElementById('user-name');
     const email = document.getElementById('user-email');
 
@@ -8,7 +8,7 @@ async function checkUserForFindId() {
     };
     console.log(body);
 
-    await axios
+    axios
         .post('/api/users/find-user-id', body)
         .then((res) => {
             userID = res.data.id;
