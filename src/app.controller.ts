@@ -1,6 +1,7 @@
 import {
     Controller,
     Get,
+    Post,
     Render,
     Req,
     UnauthorizedException,
@@ -62,5 +63,11 @@ export class AppController {
         }
 
         return { component: 'passwordChange' };
+    }
+
+    @Get('id-find')
+    @Render('index')
+    checkUserForFindId() {
+        return { component: 'idFind' };
     }
 }
