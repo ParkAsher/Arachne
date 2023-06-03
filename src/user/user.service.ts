@@ -250,9 +250,12 @@ export class UserService {
     async checkUserForFindId(findUserIdDto: FindUserIdDto) {
         const { email, name } = findUserIdDto;
 
-        const user = await this.userRepository.findOneBy({
-            email: email,
-            name: name,
+        const user = await this.userRepository.findOne({
+            where: {
+                email: email,
+                name: name,
+            },
+            select: ['id'],
         });
 
         if (!user) {

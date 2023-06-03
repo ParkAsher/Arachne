@@ -169,7 +169,14 @@ export class UserController {
 
     // 아이디 찾기 - 이름과 이메일이 일치하는 유저의 ID를 출력
     @Post('/find-user-id')
-    async checkUserForFindId(@Body() findUserId: FindUserIdDto) {
+    async checkUserForFindId(@Body() findUserId: FindUserIdDto, @Req() req) {
+        const { isLoggedIn } = req.auth;
+
+        if (isLoggedIn) {
+            throw new UnauthorizedException(
+                '로그인 상태에서는 이용할 수 없습니다.',
+            );
+        }
         const res = await this.userService.checkUserForFindId(findUserId);
 
         return res;
