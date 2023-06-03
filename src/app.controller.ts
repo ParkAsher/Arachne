@@ -1,6 +1,7 @@
 import {
     Controller,
     Get,
+    Post,
     Render,
     Req,
     UnauthorizedException,
@@ -62,5 +63,20 @@ export class AppController {
         }
 
         return { component: 'passwordChange' };
+    }
+
+    @UseGuards(AuthGuard)
+    @Get('id-find')
+    @Render('index')
+    checkUserForFindId(@Req() req) {
+        const { isLoggedIn } = req.auth;
+
+        if (isLoggedIn) {
+            throw new UnauthorizedException(
+                '로그인 상태에서는 이용할 수 없습니다.',
+            );
+        }
+
+        return { component: 'idFind' };
     }
 }

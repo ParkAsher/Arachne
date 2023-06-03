@@ -20,6 +20,7 @@ import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { CacheService } from 'src/cache/cache.service';
 import { updateUserPasswordDto } from './dto/update-user-password.dto';
 import { PasswordResetRequestDto } from './dto/password-reset-request.dto';
+import { FindUserIdDto } from './dto/find-user-id.dto';
 
 @Controller('/api/users')
 export class UserController {
@@ -162,6 +163,21 @@ export class UserController {
         const res = await this.userService.checkUserForFindPassword(
             resetPasswordRequestDto,
         );
+
+        return res;
+    }
+
+    // 아이디 찾기 - 이름과 이메일이 일치하는 유저의 ID를 출력
+    @Post('/find-user-id')
+    async checkUserForFindId(@Body() findUserId: FindUserIdDto, @Req() req) {
+        const { isLoggedIn } = req.auth;
+
+        if (isLoggedIn) {
+            throw new UnauthorizedException(
+                '로그인 상태에서는 이용할 수 없습니다.',
+            );
+        }
+        const res = await this.userService.checkUserForFindId(findUserId);
 
         return res;
     }
