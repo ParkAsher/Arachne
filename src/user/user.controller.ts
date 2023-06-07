@@ -154,16 +154,23 @@ export class UserController {
         return await this.userService.updateUserPassword(userId, passwordInfo);
     }
 
-    // 모든 회원 정보 불러오기
+    // <Todo> 관리자 계정만
+    // 백오피스 - 모든 회원 정보 불러오기
     @Get('/admin')
     async getAllUser(): Promise<Users[]> {
         return await this.userService.getAllUser();
     }
 
+    // 백오피스 - 회원 정보 불러오기
+    @Get('/admin/:userId')
+    async getUserById(@Param('userId') userId: number): Promise<Users> {
+        return await this.userService.getUserById(userId);
+    }
+
     // 백오피스 - 회원 삭제
     @Delete('/admin/:userIdList')
     async deleteUser(
-        @Param('userIdList') userIdList: Array<number>,
+        @Param('userIdList') userIdList: string,
     ): Promise<{ message: string }> {
         await this.userService.deleteUser(userIdList);
         return { message: '회원이 삭제되었습니다.' };
@@ -171,12 +178,12 @@ export class UserController {
 
     // 백오피스 - 유저 정보 수정
     @Patch('/admin/:userId')
-    async backUpdateUser(
+    async adminUpdateUser(
         @Param('userId') userId: number,
-        @Body() backUpdateUserDto: BackUpdateUserDto,
+        @Body() userInfo: BackUpdateUserDto,
     ): Promise<{ message: string }> {
-        await this.userService.updateUser(userId, backUpdateUserDto);
-        return { message: '수정 되었습니다.' };
+        await this.userService.adminUpdateUserProfile(userId, userInfo);
+        return { message: '수정되었습니다.' };
     }
 
     // 백오피스 - 유저 가입 신청 허가
@@ -185,6 +192,6 @@ export class UserController {
         @Param('userId') userId: number,
     ): Promise<{ message: string }> {
         await this.userService.acceptUser(userId);
-        return { message: '수정 되었습니다.' };
+        return { message: '수정되었습니다.' };
     }
 }

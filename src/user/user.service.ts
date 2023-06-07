@@ -230,7 +230,9 @@ export class UserService {
     async getAllUser(): Promise<Users[]> {
         return await this.userRepository.find({
             select: [
+                'userId',
                 'id',
+                'password',
                 'name',
                 'email',
                 'nickname',
@@ -241,11 +243,30 @@ export class UserService {
         });
     }
 
+    // 백오피스 - 유저 조회 (모든 정보)
+    async getUserById(userId: number): Promise<Users> {
+        return await this.userRepository.findOne({
+            select: [
+                'id',
+                'password',
+                'name',
+                'email',
+                'nickname',
+                'phone',
+                'role',
+                'profileImg',
+            ],
+            where: { userId },
+        });
+    }
+
     // 백오피스 - 유저 삭제
-    async deleteUser(userIdList: Array<number>): Promise<void> {
+    async deleteUser(userIdList: string): Promise<void> {
         try {
-            for (let i = 0; i < userIdList.length; i++) {
-                const userId = userIdList[i];
+            const arr = userIdList.split(',');
+
+            for (let i = 0; i < arr.length; i++) {
+                const userId = Number(arr[i]);
                 await this.userRepository.delete(userId);
             }
         } catch (error) {
@@ -254,12 +275,19 @@ export class UserService {
     }
 
     // 백오피스 - 유저 정보 수정
-    async updateUser(
+    // <Todo> 중복성체크
+    async adminUpdateUserProfile(
         userId: number,
-        backUpdateUserDto: BackUpdateUserDto,
+        userInfo: BackUpdateUserDto,
     ): Promise<void> {
         try {
-            await this.userRepository.update(userId, { ...backUpdateUserDto });
+            if (userInfo.password) {
+                // 비밀번호 암호화
+                const hashedPassword = await bcrypt.hash(userInfo.password, 10);
+                userInfo.password = hashedPassword;
+            }
+
+            await this.userRepository.update(userId, { ...userInfo });
         } catch (error) {
             throw error;
         }
