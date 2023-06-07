@@ -41,19 +41,19 @@ export class Users {
     @Column('varchar', { nullable: false })
     phone: string;
 
-    @Column('varchar', { nullable: true })
+    @Column('varchar', { nullable: true, name: 'profile_img' })
     profileImg: string;
 
     @Column({ type: 'int', unsigned: true, nullable: false, default: 3 })
     role: number;
 
-    @CreateDateColumn({ nullable: true })
+    @CreateDateColumn({ nullable: true, name: 'created_at' })
     readonly createdAt: Date;
 
-    @UpdateDateColumn({ nullable: true })
+    @UpdateDateColumn({ nullable: true, name: 'updated_at' })
     readonly updatedAt: Date;
 
-    @DeleteDateColumn({ nullable: true, default: null })
+    @DeleteDateColumn({ nullable: true, default: null, name: 'deleted_at' })
     readonly deletedAt: Date | null;
 
     /*
@@ -80,17 +80,8 @@ export class Users {
         user - article : Many To Many
         (Likes)
     */
-    @ManyToMany(() => Articles, (articles) => articles.LikesUsers)
-    @JoinTable({
-        name: 'Likes',
-        joinColumn: {
-            name: 'user_id',
-            referencedColumnName: 'userId',
-        },
-        inverseJoinColumn: {
-            name: 'article_id',
-            referencedColumnName: 'articleId',
-        },
+    @ManyToMany(() => Articles, (articles) => articles.Likes, {
+        onDelete: 'CASCADE',
     })
     LikesArticles: Articles[];
 }

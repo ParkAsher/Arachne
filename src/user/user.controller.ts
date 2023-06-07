@@ -3,8 +3,8 @@ import {
     Controller,
     Delete,
     Get,
+    HttpCode,
     Param,
-    ParseIntPipe,
     Patch,
     Post,
     Req,
@@ -20,6 +20,8 @@ import { Users } from 'src/entities/users.entity';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { CacheService } from 'src/cache/cache.service';
 import { updateUserPasswordDto } from './dto/update-user-password.dto';
+import { PasswordResetRequestDto } from './dto/password-reset-request.dto';
+import { FindUserIdDto } from './dto/find-user-id.dto';
 import { BackUpdateUserDto } from './dto/back-update-user.dto';
 
 @Controller('/api/users')
@@ -152,6 +154,34 @@ export class UserController {
         }
 
         return await this.userService.updateUserPassword(userId, passwordInfo);
+    }
+
+    // 비밀번호 찾기 - payload와 일치하는 유저가 있는지 체크
+    @Post('/password-reset-request')
+    @HttpCode(200)
+    async checkUserForFindPassword(
+        @Body() resetPasswordRequestDto: PasswordResetRequestDto,
+    ) {
+        const res = await this.userService.checkUserForFindPassword(
+            resetPasswordRequestDto,
+        );
+
+        return res;
+    }
+
+    // 아이디 찾기 - 이름과 이메일이 일치하는 유저의 ID를 출력
+    @Post('/find-user-id')
+    async checkUserForFindId(@Body() findUserId: FindUserIdDto, @Req() req) {
+        const { isLoggedIn } = req.auth;
+
+        if (isLoggedIn) {
+            throw new UnauthorizedException(
+                '로그인 상태에서는 이용할 수 없습니다.',
+            );
+        }
+        const res = await this.userService.checkUserForFindId(findUserId);
+
+        return res;
     }
 
     // <Todo> 관리자 계정만

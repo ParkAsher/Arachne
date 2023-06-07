@@ -52,16 +52,16 @@ export class Articles {
     @JoinColumn({ name: 'category_id' })
     Categories: Categories;
 
-    @CreateDateColumn({ nullable: true })
-    readonly createdAt: Date;
-
     @Column({ type: 'int', unsigned: true })
     category_id: number;
 
-    @UpdateDateColumn({ nullable: true })
+    @CreateDateColumn({ nullable: true, name: 'created_at' })
+    readonly createdAt: Date;
+
+    @UpdateDateColumn({ nullable: true, name: 'updated_at' })
     readonly updatedAt: Date;
 
-    @DeleteDateColumn({ nullable: true, default: null })
+    @DeleteDateColumn({ nullable: true, default: null, name: 'deleted_at' })
     readonly deletedAt: Date | null;
 
     /*
@@ -81,7 +81,7 @@ export class Articles {
     /*
         article - user : Many To Many
     */
-    @ManyToMany(() => Users, (users) => users.LikesArticles, {
+    @ManyToMany(() => Users, (users) => users.Likes, {
         onDelete: 'CASCADE',
     })
     LikesUsers: Users[];

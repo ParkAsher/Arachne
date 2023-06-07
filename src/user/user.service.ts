@@ -3,6 +3,7 @@ import {
     HttpException,
     HttpStatus,
     Injectable,
+    NotFoundException,
     UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -15,6 +16,8 @@ import { JwtService } from '@nestjs/jwt';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CacheService } from 'src/cache/cache.service';
 import { BackUpdateUserDto } from './dto/back-update-user.dto';
+import { PasswordResetRequestDto } from './dto/password-reset-request.dto';
+import { FindUserIdDto } from './dto/find-user-id.dto';
 
 @Injectable()
 export class UserService {
@@ -300,5 +303,41 @@ export class UserService {
         } catch (error) {
             throw error;
         }
+    }
+    // 비밀번호 찾기 - payload와 일치하는 유저가 있는지 체크
+    async checkUserForFindPassword(
+        resetPasswordRequestDto: PasswordResetRequestDto,
+    ) {
+        const { email, id, name } = resetPasswordRequestDto;
+
+        const user = await this.userRepository.findOne({
+            select: ['id'],
+            where: { email, id, name },
+        });
+
+        if (!user) {
+            throw new NotFoundException('유저 정보가 존재하지 않습니다.');
+        }
+
+        return { message: '유저 정보가 확인되었습니다.' };
+    }
+
+    // 아이디 찾기 - 이름과 이메일이 일치하는 유저의 ID를 출력
+    async checkUserForFindId(findUserIdDto: FindUserIdDto) {
+        const { email, name } = findUserIdDto;
+
+        const user = await this.userRepository.findOne({
+            where: {
+                email: email,
+                name: name,
+            },
+            select: ['id'],
+        });
+
+        if (!user) {
+            throw new NotFoundException('유저 정보가 존재하지 않습니다.');
+        }
+
+        return user;
     }
 }

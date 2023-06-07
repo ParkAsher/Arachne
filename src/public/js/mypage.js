@@ -86,8 +86,6 @@ async function updateUserInfo() {
     if (isNicknameChanged) body.nickname = nicknameInput.value;
     if (isEmailChanged) body.email = emailInput.value;
 
-    console.log(body);
-
     try {
         const response = await axios.patch('/api/users', body);
 
