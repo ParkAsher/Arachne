@@ -17,6 +17,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { CacheService } from 'src/cache/cache.service';
 import { PasswordResetRequestDto } from './dto/password-reset-request.dto';
 import { FindUserIdDto } from './dto/find-user-id.dto';
+import { PasswordResetDto } from './dto/password-reset.dto';
 
 @Injectable()
 export class UserService {
@@ -263,5 +264,25 @@ export class UserService {
         }
 
         return user;
+    }
+
+    // 회원 비밀번호 재설정 - 이메일 인증 후 재설정
+    async resetUserPassword(passwordResetDto: PasswordResetDto) {
+        const { email, newPassword } = passwordResetDto;
+
+        // 비밀번호 암호화
+        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+        try {
+            const userId = await this.userRepository.findOne({
+                where: { email: email },
+                select: ['id'],
+            });
+            await this.userRepository.update(userId, {
+                password: hashedNewPassword,
+            });
+        } catch (error) {
+            throw error;
+        }
     }
 }

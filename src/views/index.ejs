@@ -18,6 +18,7 @@
         <link rel="stylesheet" href="/css/mypage.css" />
         <link rel="stylesheet" href="/css/password-change.css" />
         <link rel="stylesheet" href="/css/password-find.css" />
+        <link rel="stylesheet" href="/css/password-reset.css"
     </head>
     <body>
         <% if (component === 'main') { %> <%- include('main.ejs') %> <% } %> <%
@@ -26,7 +27,9 @@
         if (component === 'mypage') { %> <%- include('mypage.ejs') %> <% } %> <%
         if (component === 'passwordChange') { %> <%-
         include('password-change.ejs') %> <% } %> <% if (component
-        ==='passwordFind') { %> <%- include('password-find.ejs') %> <% } %>  <%
+        ==='passwordFind') { %> <%- include('password-find.ejs') %> <% } %> <%
         if (component === 'idFind') { %> <%- include('id-find.ejs') %> <% } %>
+        <% if (component === 'passwordReset') { %> <%-
+        include('password-reset.ejs') %> <% } %>
     </body>
 </html>
