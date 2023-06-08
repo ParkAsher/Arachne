@@ -6,8 +6,7 @@ function checkUserForFindId() {
         name: name.value.trim(),
         email: email.value.trim(),
     };
-    console.log(body);
-
+    
     axios
         .post('/api/users/find-user-id', body)
         .then((res) => {

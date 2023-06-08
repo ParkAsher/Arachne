@@ -21,6 +21,7 @@ import { CacheService } from 'src/cache/cache.service';
 import { updateUserPasswordDto } from './dto/update-user-password.dto';
 import { PasswordResetRequestDto } from './dto/password-reset-request.dto';
 import { FindUserIdDto } from './dto/find-user-id.dto';
+import { PasswordResetDto } from './dto/password-reset.dto';
 
 @Controller('/api/users')
 export class UserController {
@@ -169,7 +170,7 @@ export class UserController {
 
     // 아이디 찾기 - 이름과 이메일이 일치하는 유저의 ID를 출력
     @Post('/find-user-id')
-    async checkUserForFindId(@Body() findUserId: FindUserIdDto, @Req() req) {
+    async checkUserForFindId(@Body() findUserIdDto: FindUserIdDto, @Req() req) {
         const { isLoggedIn } = req.auth;
 
         if (isLoggedIn) {
@@ -177,7 +178,15 @@ export class UserController {
                 '로그인 상태에서는 이용할 수 없습니다.',
             );
         }
-        const res = await this.userService.checkUserForFindId(findUserId);
+        const res = await this.userService.checkUserForFindId(findUserIdDto);
+
+        return res;
+    }
+
+    // 비밀번호 재설정 - 이메일 인증 후 재설정
+    @Patch('/password-reset')
+    async resetUserPassword(@Body() passwordResetDto: PasswordResetDto) {
+        const res = await this.userService.resetUserPassword(passwordResetDto);
 
         return res;
     }

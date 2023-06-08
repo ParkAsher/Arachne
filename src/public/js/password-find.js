@@ -127,8 +127,10 @@ async function verifyAuthenticationCode(email) {
         alert(`인증번호 확인 API 호출`);
 
         if (result?.data) {
+            //비밀번호 재설정 세션
+            sessionStorage.setItem('email', email);
             // 인증 성공시 - 재설정페이지
-            // window.location.href = '/password-reset';
+            window.location.href = '/password-reset';
             alert('인증 성공! 재설정 페이지로 이동!');
         }
     } catch (error) {

@@ -79,4 +79,17 @@ export class AppController {
 
         return { component: 'idFind' };
     }
+
+    @UseGuards(AuthGuard)
+    @Get('password-reset')
+    @Render('index')
+    resetUserPassword(@Req() req) {
+        const { isLoggedIn } = req.auth;
+
+        if (isLoggedIn) {
+            throw new UnauthorizedException('로그인 상태에서는 이용할 수 없습니다.');
+        }
+
+        return { component: 'passwordReset' };
+    }
 }
