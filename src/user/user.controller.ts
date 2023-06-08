@@ -140,7 +140,7 @@ export class UserController {
     }
 
     // 회원 비밀번호 변경
-    c;
+    @UseGuards(AuthGuard)
     @Patch('/password-change')
     async updateUserPassword(
         @Body() passwordInfo: updateUserPasswordDto,
@@ -170,6 +170,7 @@ export class UserController {
 
     // 아이디 찾기 - 이름과 이메일이 일치하는 유저의 ID를 출력
     @Post('/find-user-id')
+    @UseGuards(AuthGuard)
     async checkUserForFindId(@Body() findUserIdDto: FindUserIdDto, @Req() req) {
         const { isLoggedIn } = req.auth;
 
@@ -186,10 +187,7 @@ export class UserController {
     // 비밀번호 재설정 - 이메일 인증 후 재설정
     @Patch('/password-reset')
     @UseGuards(AuthGuard)
-    async resetUserPassword(
-        @Body() passwordResetDto: PasswordResetDto,
-        @Req() req,
-    ) {
+    async resetUserPassword(@Body() passwordResetDto: PasswordResetDto, @Req() req) {
         const { isLoggedIn } = req.auth;
 
         if (isLoggedIn) {
