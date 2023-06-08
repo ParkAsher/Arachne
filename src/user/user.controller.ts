@@ -140,7 +140,7 @@ export class UserController {
     }
 
     // 회원 비밀번호 변경
-    @UseGuards(AuthGuard)
+    c;
     @Patch('/password-change')
     async updateUserPassword(
         @Body() passwordInfo: updateUserPasswordDto,
@@ -185,7 +185,18 @@ export class UserController {
 
     // 비밀번호 재설정 - 이메일 인증 후 재설정
     @Patch('/password-reset')
-    async resetUserPassword(@Body() passwordResetDto: PasswordResetDto) {
+    @UseGuards(AuthGuard)
+    async resetUserPassword(
+        @Body() passwordResetDto: PasswordResetDto,
+        @Req() req,
+    ) {
+        const { isLoggedIn } = req.auth;
+
+        if (isLoggedIn) {
+            throw new UnauthorizedException(
+                '로그인 상태에서는 이용할 수 없습니다.',
+            );
+        }
         const res = await this.userService.resetUserPassword(passwordResetDto);
 
         return res;
