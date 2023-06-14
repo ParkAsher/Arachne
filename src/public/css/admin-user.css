@@ -1,0 +1,30 @@
+section {
+    color: white;
+}
+
+#modal {
+    position: absolute;
+    display: none;
+}
+
+.modal-content {
+    width: 400px;
+    background: #fff;
+    border-radius: 10px;
+    position: relative;
+    top: 50%;
+    left: 50%;
+    text-align: center;
+    box-sizing: border-box;
+    padding: 80px 0;
+    line-height: 23px;
+    cursor: pointer;
+}
+
+.profile-image-view {
+    width: 300px;
+    height: 300px;
+    border: 1px solid #7f7f66;
+    border-radius: 50%;
+    object-fit: contain;
+}

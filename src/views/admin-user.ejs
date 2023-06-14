@@ -1,0 +1,114 @@
+<%- include('admin-header.ejs') %>
+<section>
+    <header>
+        <h1>가입 회원</h1>
+        <button id="delete">삭제</button>
+    </header>
+    <table>
+        <thead>
+            <tr>
+                <th scope="col">
+                    <input type="checkbox" id="all-check" />
+                </th>
+                <th scope="col">아이디</th>
+                <th scope="col">이름</th>
+                <th scope="col">이메일</th>
+                <th scope="col">닉네임</th>
+                <th scope="col">휴대폰</th>
+                <th scope="col">권한</th>
+                <th scope="col">관리</th>
+            </tr>
+        </thead>
+        <tbody id="user-list"></tbody>
+    </table>
+</section>
+
+<section>
+    <header>
+        <h1>승인 대기 회원</h1>
+    </header>
+    <table>
+        <thead>
+            <tr>
+                <th scope="col">선택</th>
+                <th scope="col">아이디</th>
+                <th scope="col">이름</th>
+                <th scope="col">이메일</th>
+                <th scope="col">닉네임</th>
+                <th scope="col">휴대폰</th>
+                <th scope="col">권한</th>
+                <th scope="col">관리</th>
+            </tr>
+        </thead>
+        <tbody id="user-apply-list"></tbody>
+    </table>
+</section>
+
+<div id="modal">
+    <div class="modal-content">
+        <img id="profile-image-view" class="profile-image-view" />
+        <br />
+        <label class="profile-image-label" for="profile-image">
+            프로필 이미지 업로드
+        </label>
+        <input
+            type="file"
+            id="profile-image"
+            name="profile-image"
+            class="admin-input"
+            placeholder="프로필 이미지"
+            accept="image/*"
+        />
+        <div id="admin-user-id-wrap">
+            <div>아이디</div>
+            <input type="text" id="id" name="id" class="admin-input" />
+        </div>
+
+        <div id="admin-user-password-wrap">
+            <div>비밀번호 변경</div>
+            <input
+                type="text"
+                id="password"
+                name="password"
+                class="admin-input"
+            />
+        </div>
+
+        <div id="admin-user-name-wrap">
+            <div>이름</div>
+            <input type="text" id="name" name="name" class="admin-input" />
+        </div>
+
+        <div id="admin-user-email-wrap">
+            <div>이메일</div>
+            <input type="text" id="email" name="email" class="admin-input" />
+        </div>
+
+        <div id="admin-user-nickname-wrap">
+            <div>닉네임</div>
+            <input
+                type="text"
+                id="nickname"
+                name="nickname"
+                class="admin-input"
+            />
+        </div>
+
+        <div id="admin-user-phone-wrap">
+            <div>휴대폰</div>
+            <input type="text" id="phone" name="phone" class="admin-input" />
+        </div>
+
+        <div>권한</div>
+        <select id="role" name="role">
+            <option value="1">관리자</option>
+            <option value="2">일반 회원</option>
+            <option value="3">가입 대기</option>
+        </select>
+        <br />
+        <button id="close">닫기</button>
+        <button id="save" id="save">저장</button>
+    </div>
+</div>
+
+<script defer src="/js/admin-user.js"></script>

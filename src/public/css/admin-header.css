@@ -1,0 +1,42 @@
+.header-wrap {
+    width: 100%;
+    height: 2rem;
+    padding: 1.25rem 0;
+    border-bottom: 1px solid #7f7f66;
+}
+
+.header-container {
+    width: 1280px;
+    height: 100%;
+    margin: 0 auto;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-left {
+    display: flex;
+}
+
+.header-logo {
+    height: 2rem;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+}
+
+.header-btn {
+    padding: 0.75rem 1.25rem;
+    border: 1px solid #7f7f66;
+    border-radius: 10px;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 0.75rem;
+}
+
+.header-btn {
+    margin-left: 0.5rem;
+}

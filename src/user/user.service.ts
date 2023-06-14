@@ -15,6 +15,7 @@ import { signinUserDto } from './dto/signin-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CacheService } from 'src/cache/cache.service';
+import { BackUpdateUserDto } from './dto/back-update-user.dto';
 import { PasswordResetRequestDto } from './dto/password-reset-request.dto';
 import { FindUserIdDto } from './dto/find-user-id.dto';
 
@@ -228,6 +229,81 @@ export class UserService {
         }
     }
 
+    // 백오피스 - 전체 유저 조회
+    async getAllUser(): Promise<Users[]> {
+        return await this.userRepository.find({
+            select: [
+                'userId',
+                'id',
+                'password',
+                'name',
+                'email',
+                'nickname',
+                'phone',
+                'role',
+                'profileImg',
+            ],
+        });
+    }
+
+    // 백오피스 - 유저 조회 (모든 정보)
+    async getUserById(userId: number): Promise<Users> {
+        return await this.userRepository.findOne({
+            select: [
+                'id',
+                'password',
+                'name',
+                'email',
+                'nickname',
+                'phone',
+                'role',
+                'profileImg',
+            ],
+            where: { userId },
+        });
+    }
+
+    // 백오피스 - 유저 삭제
+    async deleteUser(userIdList: string): Promise<void> {
+        try {
+            const arr = userIdList.split(',');
+
+            for (let i = 0; i < arr.length; i++) {
+                const userId = Number(arr[i]);
+                await this.userRepository.delete(userId);
+            }
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    // 백오피스 - 유저 정보 수정
+    // <Todo> 중복성체크
+    async adminUpdateUserProfile(
+        userId: number,
+        userInfo: BackUpdateUserDto,
+    ): Promise<void> {
+        try {
+            if (userInfo.password) {
+                // 비밀번호 암호화
+                const hashedPassword = await bcrypt.hash(userInfo.password, 10);
+                userInfo.password = hashedPassword;
+            }
+
+            await this.userRepository.update(userId, { ...userInfo });
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    // 백오피스 - 회원 가입 승인
+    async acceptUser(userId: number): Promise<void> {
+        try {
+            await this.userRepository.update(userId, { role: 2 });
+        } catch (error) {
+            throw error;
+        }
+    }
     // 비밀번호 찾기 - payload와 일치하는 유저가 있는지 체크
     async checkUserForFindPassword(
         resetPasswordRequestDto: PasswordResetRequestDto,
@@ -263,5 +339,13 @@ export class UserService {
         }
 
         return user;
+    }
+
+    // 권한 검증 - userId 이용
+    async adminCheck(userId: number) {
+        return await this.userRepository.findOne({
+            select: ['role'],
+            where: { userId },
+        });
     }
 }
