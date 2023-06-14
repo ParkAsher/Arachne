@@ -2,7 +2,7 @@ section {
     color: white;
 }
 
-.modal {
+#modal {
     position: absolute;
     display: none;
 }

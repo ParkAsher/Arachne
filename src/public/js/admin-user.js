@@ -69,13 +69,38 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // 하위 체크박스 체크 여부에 따른 전체 선택 체크박스 체크 변경
-    $('.check').change(function () {
-        if ($('.check:checked').length == $('.check').length) {
-            $('#all-check').prop('checked', true);
+    const checkbox = document.getElementsByClassName('check');
+    const checkAll = document.getElementById('all-check');
+
+    for (let i = 0; i < checkbox.length; i++) {
+        let checkfalse = 0;
+
+        checkbox[i].onclick = function () {
+            for (let i = 0; i < checkbox.length; i++) {
+                if (checkbox[i].checked === false) {
+                    checkAll.checked = false;
+                    checkfalse++;
+                }
+            }
+
+            if (checkfalse === 0) {
+                checkAll.checked = true;
+            }
+        };
+    }
+
+    // 전체 선택 체크박스
+    checkAll.onclick = function () {
+        if (checkAll.checked) {
+            for (let i = 0; i < checkbox.length; i++) {
+                checkbox[i].checked = true;
+            }
         } else {
-            $('#all-check').prop('checked', false);
+            for (let i = 0; i < checkbox.length; i++) {
+                checkbox[i].checked = false;
+            }
         }
-    });
+    };
 
     // 회원 정보 불러오기
     async function getUserInfo(userId) {
@@ -100,24 +125,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // 회원 수정
-    $('.edit').on('click', async function () {
-        const userId = $(this).val();
-        save.setAttribute('value', userId);
-        const userInfo = await getUserInfo(userId);
-        idInput.value = userInfo.id;
-        nameInput.value = userInfo.name;
-        emailInput.value = userInfo.email;
-        nicknameInput.value = userInfo.nickname;
-        phoneInput.value = userInfo.phone;
-        profileImageView.src = userInfo.profileImg;
-        roleInput.value = userInfo.role;
-        $('.modal').fadeIn();
-    });
+    const edit = document.getElementsByClassName('edit');
+    const modal = document.getElementById('modal');
+    for (let i = 0; i < edit.length; i++) {
+        edit[i].onclick = async function () {
+            const userId = $(this).val();
+            save.setAttribute('value', userId);
+            const userInfo = await getUserInfo(userId);
+            idInput.value = userInfo.id;
+            nameInput.value = userInfo.name;
+            emailInput.value = userInfo.email;
+            nicknameInput.value = userInfo.nickname;
+            phoneInput.value = userInfo.phone;
+            profileImageView.src = userInfo.profileImg;
+            roleInput.value = userInfo.role;
+            modal.style.display = 'block';
+        };
+    }
 
     // 수정 모달 닫기
-    $('.close').on('click', function () {
-        $('.modal').fadeOut();
-    });
+    const close = document.getElementById('close');
+    close.onclick = function () {
+        modal.style.display = 'none';
+    };
 
     // 이미지 업로드
     profileImageInput.addEventListener('change', async (e) => {
@@ -143,7 +173,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // 수정 모달 저장
-    $('.save').on('click', async function () {
+    const save = document.getElementById('save');
+    save.onclick = async function () {
         const userId = $(this).val();
         const id = idInput.value;
         const password = passwordInput.value;
@@ -187,21 +218,25 @@ document.addEventListener('DOMContentLoaded', async () => {
                     adminUserExistErrorHandler(err.response.data.message);
                 }
             });
-    });
+    };
 
     // 가입 승인
-    $('.accept').on('click', function () {
-        const userId = $(this).val();
-        try {
-            axios.patch(`/api/users/admin/accept/${userId}`);
-            window.location.reload();
-        } catch (error) {
-            alert(error);
-        }
-    });
+    const accept = document.getElementsByClassName('accept');
+    for (let i = 0; i < accept.length; i++) {
+        accept[i].onclick = function () {
+            const userId = $(this).val();
+            try {
+                axios.patch(`/api/users/admin/accept/${userId}`);
+                window.location.reload();
+            } catch (error) {
+                alert(error);
+            }
+        };
+    }
 
     // 회원 삭제
-    $('.delete').on('click', function () {
+    const deleteBtn = document.getElementById('delete');
+    deleteBtn.onclick = function () {
         const userIdList = [];
 
         $('.check:checked').each(function () {
@@ -215,7 +250,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         } catch (error) {
             alert(error);
         }
-    });
+    };
 });
 
 async function getUsersInfo() {
@@ -226,15 +261,6 @@ async function getUsersInfo() {
         alert(error);
     }
 }
-
-// 전체 선택 체크박스
-$('#all-check').change(function () {
-    if ($('#all-check').is(':checked')) {
-        $('.check').prop('checked', true);
-    } else {
-        $('.check').prop('checked', false);
-    }
-});
 
 function adminUserValidationErrorHandler(errorPosition) {
     const errorPositionElement = document.getElementById(
