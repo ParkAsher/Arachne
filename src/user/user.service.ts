@@ -340,4 +340,12 @@ export class UserService {
 
         return user;
     }
+
+    // 권한 검증 - userId 이용
+    async adminCheck(userId: number) {
+        return await this.userRepository.findOne({
+            select: ['role'],
+            where: { userId },
+        });
+    }
 }

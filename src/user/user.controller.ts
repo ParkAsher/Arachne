@@ -23,6 +23,7 @@ import { updateUserPasswordDto } from './dto/update-user-password.dto';
 import { PasswordResetRequestDto } from './dto/password-reset-request.dto';
 import { FindUserIdDto } from './dto/find-user-id.dto';
 import { BackUpdateUserDto } from './dto/back-update-user.dto';
+import { AdminGuard } from 'src/auth/guards/admin.guard';
 
 @Controller('/api/users')
 export class UserController {
@@ -184,43 +185,113 @@ export class UserController {
         return res;
     }
 
-    // <Todo> 관리자 계정만
     // 백오피스 - 모든 회원 정보 불러오기
+    @UseGuards(AdminGuard)
     @Get('/admin')
-    async getAllUser(): Promise<Users[]> {
+    async getAllUser(@Req() req): Promise<Users[]> {
+        const { isLoggedIn, isAdmin } = req.auth;
+
+        if (!isLoggedIn) {
+            throw new UnauthorizedException('로그인 중이 아닙니다.');
+        }
+
+        if (!isAdmin) {
+            throw new UnauthorizedException(
+                '관리자 계정이 아니면 이용할 수 없습니다.',
+            );
+        }
+
         return await this.userService.getAllUser();
     }
 
     // 백오피스 - 회원 정보 불러오기
+    @UseGuards(AdminGuard)
     @Get('/admin/:userId')
-    async getUserById(@Param('userId') userId: number): Promise<Users> {
+    async getUserById(
+        @Param('userId') userId: number,
+        @Req() req,
+    ): Promise<Users> {
+        const { isLoggedIn, isAdmin } = req.auth;
+
+        if (!isLoggedIn) {
+            throw new UnauthorizedException('로그인 중이 아닙니다.');
+        }
+
+        if (!isAdmin) {
+            throw new UnauthorizedException(
+                '관리자 계정이 아니면 이용할 수 없습니다.',
+            );
+        }
+
         return await this.userService.getUserById(userId);
     }
 
     // 백오피스 - 회원 삭제
+    @UseGuards(AdminGuard)
     @Delete('/admin/:userIdList')
     async deleteUser(
         @Param('userIdList') userIdList: string,
+        @Req() req,
     ): Promise<{ message: string }> {
+        const { isLoggedIn, isAdmin } = req.auth;
+
+        if (!isLoggedIn) {
+            throw new UnauthorizedException('로그인 중이 아닙니다.');
+        }
+
+        if (!isAdmin) {
+            throw new UnauthorizedException(
+                '관리자 계정이 아니면 이용할 수 없습니다.',
+            );
+        }
+
         await this.userService.deleteUser(userIdList);
         return { message: '회원이 삭제되었습니다.' };
     }
 
     // 백오피스 - 유저 정보 수정
+    @UseGuards(AdminGuard)
     @Patch('/admin/:userId')
     async adminUpdateUser(
         @Param('userId') userId: number,
         @Body() userInfo: BackUpdateUserDto,
+        @Req() req,
     ): Promise<{ message: string }> {
+        const { isLoggedIn, isAdmin } = req.auth;
+
+        if (!isLoggedIn) {
+            throw new UnauthorizedException('로그인 중이 아닙니다.');
+        }
+
+        if (!isAdmin) {
+            throw new UnauthorizedException(
+                '관리자 계정이 아니면 이용할 수 없습니다.',
+            );
+        }
+
         await this.userService.adminUpdateUserProfile(userId, userInfo);
         return { message: '수정되었습니다.' };
     }
 
     // 백오피스 - 유저 가입 신청 허가
+    @UseGuards(AdminGuard)
     @Patch('/admin/accept/:userId')
     async acceptUser(
         @Param('userId') userId: number,
+        @Req() req,
     ): Promise<{ message: string }> {
+        const { isLoggedIn, isAdmin } = req.auth;
+
+        if (!isLoggedIn) {
+            throw new UnauthorizedException('로그인 중이 아닙니다.');
+        }
+
+        if (!isAdmin) {
+            throw new UnauthorizedException(
+                '관리자 계정이 아니면 이용할 수 없습니다.',
+            );
+        }
+
         await this.userService.acceptUser(userId);
         return { message: '수정되었습니다.' };
     }
